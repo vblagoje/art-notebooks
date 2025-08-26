@@ -1,0 +1,9 @@
+[project]
+name = "art-notebooks"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "skypilot[cudo,do,fluidstack,gcp,lambda,paperspace,runpod]==0.9.3",
+]
