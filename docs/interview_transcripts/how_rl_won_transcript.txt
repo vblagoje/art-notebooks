@@ -1,0 +1,678 @@
+[Music] Hey everyone, welcome to the L in Space podcast. This is Allesio, founder of
+Colonel Labs, and I'm joined by Swix, editor of Late in Space. Hello. Hello. And we're so excited to
+have Kyle finally in the studio. Welcome. Hey, I'm very excited to be here. Uh Kyle, you're CEO, founder,
+co-founder, co-founder, CEO. Yeah. Of open pipe, which uh started two years ago and recently got acquired by Core
+Weave. Congrats. Thanks. uh where I think you might be our first like started and exited
+founder that we've had on the pod. Maybe isish. I don't know. I'm not I'm not keeping especially on that timeline.
+Well, I don't think I was exited when we I don't remember if if uh we set this up before or after we um announced we were
+getting acquired. I specifically pinged you because uh you got I think you got acquired. You've
+been on my list uh to watch. Obviously, you' spoken three times at AIE and you on my list of like when is it a good
+time to have a open pipe or fine-tuning RL discussion and then you got acquired and I'm like okay yeah that's a that's a
+good that's a good time to talk about it also because I think like it gives us a window to talk about acquisitions
+consolidation like what should be an independent company what what maybe doesn't have to be anyway but we'll
+maybe do this chronologically so we don't we don't get too far ahead of ourselves you were famously director of
+startup school yes Maybe for people who don't know like what what is startup school? Did that make you become like fall in love with
+the color orange? Yes, I'm wearing an orange shirt for those who are listening. A very bright
+orange shirt. This this is my conference shirt and I felt like, you know, it was appropriate for the the pot as well. Um,
+so yes, I was at I was at Y Combinator for about 4 and a half years and led the Startup School team there. So startup
+school, it's it's changed over the years. It meant one thing before I was there. It means another thing now. But during the time I was at YC, startup
+school was basically all of the external facing a lot of the content. Um
+certainly all of the tech. So it was it was things like we had a like like a MOO effectively where founders could come
+in, they could learn about how to start a company, they could get advice from YC founders, YC partners. Um we had a
+co-founder matching uh service that we built which actually worked really well. um we got a lot of of people through our
+total like you know I guess technically I can't that probably doesn't matter anymore but a very large fraction of the
+batches that went through YC while I was there um were directly attributable to people that we found and and end up
+recruiting to YC um through their experience to at at startup school. So that was kind of what we were working
+on. Yeah. I was I always kind of consider as like the the scout program for YC right like the YC before the YC. any notable
+like famous people that that met as part of your co-founder match matching because I'm always very negative on
+those things because like it's like online dating like the the chances of success is super low but when it works it it's really nice
+you know that's a great question I left so we launched that product probably 9 months before I left and so I don't know
+what the the long-term outcomes were of that specifically. Yeah. So you left YC you spent a year in the kind of the wilderness. You went
+through YC uh S23. Uh what's that journey like? What's the you know I was very excited about AI
+things in general. Um this was so I left YC I guess uh beginning of 2022 and I
+was trying out a bunch of different things. Um ended up landing on what turned into open pipe in early 2023.
+This was uh let's see so I'd been working so my my co-ounder is my brother um my little brother which has been fun
+journey on its own. We were looking at different ideas and one thing we realized was we actually started the
+company immediately after the GPD4 launch. And what we saw as the opportunity in the market at the time, which has changed since then, was GPD4
+was insanely expensive and extremely powerful. But there was an opportunity to distill like specific workflows from
+GPD4 down to much smaller, much cheaper models. And there was like a very clear
+value prop there given how expensive GP4 was. um it was hard to deploy in production, but you could sort of like
+take those abilities and deploy them much more cheaply. So, so that was kind of the first thing we built was this kind of very managed, very clean um
+distillation flow. What was that process like in the beginning to like get people to actually care because I'm assuming most people
+were doing experimentation but like didn't really have these large production workflows that they needed to like distill down
+and then I think maybe once we got there the models get cheaper and faster. So what was like the initial you know six
+nine months of the company through the evolution of the model? Yeah, so it worked. It was great. So I mean it did take us a while. I guess we
+formed the company early maybe March of 20 2023. By the time we launched our
+product it was August I want to say there were there were some like different things we were trying in between and actually it was not hard to
+find people and get them excited. There weren't very many I mean this was even late 2023 there weren't very many people
+in production but anyone who did have production workflows it was extremely painful like you know they were paying hundreds of thousands of dollars a month
+to open AAI so it was very easy to convince them to try this out and so we got our first three customers after
+launching probably within a month and we were doing significant revenue um over the next 6 months we actually got to a
+million in ARR um over about a 8-month period following that launch so by the latter part of 2024 so actually yes
+initial traction was was was super strong um very clear value prop. Um but then as you were alluding to kind of
+like there was just this slow march of like the frontier model token prices just dropping over and over by you know
+3 5x over and over again which kind of ate away our our value prop over time. what was the process of like fine-tuning
+the model because even the open models were not that great you know and so what were maybe the bottlenecks like instead
+of having three to get to like 30 customers did you feel like in the beginning it was like a matter of like
+just the market growing like the open source models not being good enough like the finetuning not being simple efficient enough
+the pain point I guess repeating what I said before was the price was too high on the closed models but you couldn't just drop in an open model and replace
+them cuz like you're saying the quality was quite bad especially as you're moving to to smaller model sizes but larger models open models weren't been
+available at that time. So, so that's kind of where the value prop was was like, hey, the closed models are too expensive, at least the ones that are
+performant enough to to do the job. The open ones are not good enough. We have like a very clear manage flow. Um, the
+way the flow worked was was quite simple. You simply put in our SDK. It's a drop-in replacement for the open AI
+SDK. It's capturing you continue to use GPD4 in production for a period of time.
+We're capturing the requests and responses. And then we had just a very clean manage flow where it's like, okay, at some point you say, hey, I want to
+distill this down. and you you train on that and then you know we provided an API that was a direct drop in
+replacement you would just change kind of the inference URL and you were using your own model and it at your app
+continued working yeah I I think the market analysis here because I was also exploring starting a
+business around that at the time and that's why I ended up not investing was basically you get squeezed between
+the GPU providers who also want to do fine-tuning as a service because then that that makes people more sticky uh
+and the the labs who keep putting out distilled versions of like something whatever many versions of their their
+models. What was the analysis on the on the neo cloud side because you you kind
+of also want to host the inference. Yeah, honestly we so we we like I saying felt very squeezed from the frontier
+labs that were putting out just more capable models at lower cost. I did not see the competition ever really materialize from the neoclouds from the
+the GPU providers. Um everybody had an offering in finetuning when we talked to customers. nobody used them because they
+just were really hard to use. Um, so I do think that like, you know, call it a product thing, I guess.
+Like it's not their focus, so who cares? Yeah. Interesting. Developer experience matters.
+It does. Yeah. Still does. I don't know. Maybe it doesn't matter anymore. Now we we just have coding models do everything for us.
+No, it still does. Like when you have when you have thinking machines launching an API and people getting excited about the API, you're like,
+"Yeah, okay. That's just pure developer experience there." That's fair. Yeah. Yeah. What's the I'm just going through the
+chronological list here. was like the Mistra 7B fine tet and kind of like one of the big inflection points like in the
+history of the company. It's like okay this is like a good open model and like the 7B size or is it just
+Yeah, Mistral and Mixtra that that was like a golden period of fine-tuning startups because Mistral was like a
+credible open- source model. Yeah, they were really strong models um better than the Llama 2 that they were
+you know effectively replacing. Um, and they also have the super open license, uh, which which but I think the
+licensing has become maybe less of a concern over time at the margin because
+people are getting used to maybe but um, at the time that was like a pretty big deal that they had this fully open
+Apache 2 license and you know, yeah, maybe maybe they have their own like IP
+issues with how they train it. I don't know. I have no inside information there. But at least the guarantee they were making to people using their model. I call this mist draw washing as
+long as it's like it's it's it's you know comes from the sparkling region of France called mistral it's okay don't
+ask about what goes into it there's there's there's plausible deniability arms length connection there yeah okay there there was this mdrawal period
+uh Jan 2024 you talked about s Laura and there was there was a period of time where Laura's uh became more important I
+feel like they they then became less important and I don't know what what's like the rise and fall of Laura for for
+you as as a business yeah so so Laura's um have really really so if you're predicate on the fact that
+you're doing fine-tuning at all. Loras have very very attractive properties relative to doing a full fine tune,
+right? Because if you're doing a Laura, you can add training time. It makes it helps some. You're using less memory to
+train. But it really where it really helps you out is at inference time because if you're doing Lauras, then when you deploy it for inference, you can multiplex, you know, basically an
+arbitrarily large number of Loras on the same GPU deployment. That lets you do things like do per token pricing as
+opposed to GPU hour pricing. Um, it just gives you a much more flexibility uh at deployment time. I'm actually still a
+Laura bowl like for the record. You know, you're talking about the rise and fall. I think I think Laura's, you know, their their their future is still out
+there. I mean, they're cool again cuz thinking machines. I felt very vindicated by that blog post
+for the record. Um, just I guess for listeners, Thinking Machines put out like uh a week or two ago a blog post
+doing quite a lot of research on the the trade-offs between Loras and full fine tuning in in various different training regimes. I think the reason Lauras were
+uncool for a while was was mostly just cuz like finetuning was uncool. Like I think if you're doing fine-tuning anyway, like Loras are still like, you
+know, in in many cases the way you want to do it. But not that many people were doing fine tuning. As a marketing guy, Laura's had bad
+marketing. Like they they were just like, "Oh, like you can't afford full fine tuning. Here's like here's like the Walmart like
+store brand fine tuning." No, that's that's fair. There is some of that. I think we didn't have a huge
+issue like we've had to do some user education like, "Hey, just try it." I think for the training runs that like
+the types of training runs that we're interested in where it's like hey I'm doing a relatively lightweight customization of an existing model for a
+specific task there's really no downside to using Aurora and there's a lot of like upsides from an like in for a
+simplicity point of view I agree that there's like a branding issue around that hopefully the thinking machines blog post kind of like you know
+yeah rank one and like you know I think there's there's different hyperparameters the loras that you can
+use to to make yourself happy the fact that John Schuman was like nope like we're actually banking the company on
+this at least for now is a pretty big vote of confidence. You know, I feel it's I think it's surprising that anyone's done
+the research prior to to them thinking machines prior to their launch who had come from one of the big labs and and
+what that research was like, oh no, everyone doing post- trainer research inside this big lab uses Lauras. I mean,
+not for like the full run, but like when they're doing like their experiments, they'll just use Lauras on on a base model to to run the experiments and it
+works fine. for listeners of the pod that that was leaked uh in in one of the pods that we released, but it's up to
+you to find it. Cool. Uh and then so then it was the first World's Fair. You talked about you
+we you probably don't need fine-tuning as as a fine tuning founder. Basically, I think your your talks are really good. I would recommend people watch all of
+them. What I pulled out was you had uh pieces of advice. So your your talk title is obviously somewhat
+intentionally clickbaity, but your your actual advice on when people should fine-tune is when it's cost, latency or
+quality, consistency that you that you really care about. Yeah, I mostly stand by that. I I don't think it's changed. And the biggest one
+we see today, and this is true for kind of like classical SFT. It's also true for the RL stuff we're doing today.
+cross my fingers, it's not always the thing, but the main one I see that really drives fine tuning is if you have
+to move to a smaller model, and it's typically for latency reasons, and this is usually like real-time voice. So, if
+you're sort of forced into a smaller model anyway, then there's a very high chance that that doing some tuning on
+that model is going to get you like it will be necessary basically to have a successful deployment. So, we see that a
+lot coming from customers that again have those latency requirements. There's other reasons as well. Sometimes for
+whatever reason you really have to deploy on a single GPU. You have to deploy within your own cloud and you want a you know you basically have to
+use a smaller model to do that. So basically in the case where you're forced to a smaller model anyway then fine-tuning it is often necessary. I
+would say for 90% of use cases where you aren't forced to a smaller model then it's still not a good ROI and you you
+you probably shouldn't invest in it today. How do you quantify these things? So
+cost right could always be lower. Mhm. So is there kind of like a threshold of like cost to ROI? Like
+because it's also hard to figure out how much it's going to cost to do the fine tune because you need to get the data and all of that. Like do you have a
+mental model of that? This is sort of like a a function of the total amount of overhead required. I'd
+say there's there's two parts on the cost side and then you know there's there's one multiple parts on on the benefit side. On the cost side, the main
+things you have to think about are the upfront effort required to get an actual
+like training system set up for your task. And that can be quite variable, but I would say at a minimum, you're
+going to have to dedicate a couple of weeks of like a fairly competent engineer's time. And if you have and if
+you have like a very complex system and you're doing RL and you need to set up a whole environment, it could be a lot longer. It could be, you know, a couple of months of time. So that's just like a
+fixed cost you have to pay. There's also like an ongoing carrying cost where once
+you've committed to doing fine-tuning, it does make other parts of your stack
+less flexible, less nimble because whenever you're updating your prompt or like you're adding new context or
+whatever, like now you have to like, you know, spend a few hours training a model and that's just going to like slow down your your iteration cycle which is a
+real cost and in many cases that's the larger cost. So you only want to do that if like the benefits are large enough.
+The dollar cost I would say is basically never a factor. Um it's just so much
+less than the time the amount you're spending this engineer to to do the work that it's not I mean it's you know each of these runs is between five and a
+couple hundred dollars. Um and it's just you you don't have to do that many of them. Yeah. Because most of the data is like
+first party. Mhm. Yeah. Right. Okay. When was the switch to RL? Was it when 01 preview came out? you
+were maybe like okay it's time to move on from SFT or yeah so that was a big moment for us um
+with you know there's all the leaks before that about strawberry and all this and like you know a lot of people talking about okay how are they doing it
+um we realized through that that like okay someone's figured out how to make
+RL actually work with LLMs which was not a thing I mean it was a thing that like some people had played around with before that but it wasn't like a thing
+many people were thinking about and so our bet at that point was yes let's
+figure out whether this works for task specifically and the space We just I think it's important to kind of like
+tease out different parts of the market. I think with the release of 01 and this
+has been like proved out many times with releases since then. I think like there's now like a very strong consensus
+that like okay on the frontier model like general purpose model side
+investments in RL are paying off. I think I I don't think most people would argue with that. you're especially as as
+you're getting into these agentic tasks um and training them to do that like it seems very clear well obviously the big
+labs are paying like ridiculous amounts of money for these environments and everything but also like they're actually getting really good results the the models coming out you know we're
+seeing it especially on the coding model side but like in other in other contexts as well we're seeing the sort of especially agentic use is working way
+better because of this so I think like even late 2024 it was pretty clear that
+like RL was going to work in that context and then the question in our mind was like can we apply this in a
+different segment in the business which is kind of like task specific customization. And so the question is like does that work well? How much
+effort does that take? Is it going to be something that ends up being unnecessary because oh the big labs can just like
+train on every single task and the base models are going to be just good at everything and so there there's you know no benefit to it. So those were kind of
+the open questions in in our mind but it seemed like there was like at least a good enough bet that you know we wanted to try it out.
+Yeah. And you had this agent reinforcement training framework and you did the email agent that's kind of like
+the first proof of concept. Was that obvious to do email? Was it obvious to call it that way? What what was like the
+behind the scene? How should we package this? So, what I told our team and this was we decided to go all in on RL in January of
+2025. And we've been doing some experience before that. We released before that kind of like an RL model that had, you know, would generate like
+Hacker News titles from from articles. Um, which is a fun project. So, we done a little bit before that, but that was
+kind of we're like, "Hey, we're going to bet the company on uh not in a literal sense, like we we could have done something else later, but like this is
+like the thing that we're going to spend all of our time working on for for at least a few months." And like what I told our team at that time in in January
+25 was like there's probably like a 25% chance that this is the right direction
+in the sense that like a year 2 years from now all the companies you know everyone doing inference should be doing
+RL and task specific training so that like their models are just way way better at their task is a relatively low
+chance but it was sort of like one of those big if true things like if that is true if it turns out that like just doing RL on your task is just like
+something everyone should be doing and it's and it's just you know teaching these agents continually teaching them through experience is just going to be a
+huge benefit than like being the first people working on that would be a really really like awesome position to be in.
+So that's how we thought about it is like you know less than 50% chance but really big outcome if not if so I think
+since that time and I've been very transparent with this like with our team and like when I'm talking to other people like I don't think the chance
+that that is the right approach is 100% yet. I think that we're still in the process even after going through this
+and and you know doing that of like figuring out but the probabilities in my mind are going in the right direction like now I think they're actually like
+today I was actually just thinking about this with another conversation I think that the chances that like everyone
+should be or you know everyone who's deploying an agent at scale should be doing RL with it either as part of sort
+of like a you know like pre-eployment or even like continuously as it's deployed that that's like the pattern that that's going to get to I'd say there's like a
+55 60% % chance that that's just like the better thing to do and that's informed by kind of like our experience working with customers. So anyway, not
+100% but like going all the way back to your question like no it was not obvious. It was an informed bet you know
+it's it's still a bet but one that I'm I'm feeling pretty good about right now. One thing I think that is tricky about
+just onboarding onto this space is all the math. Uh I remember reading the DPO paper I
+think I think they were at Eurs for 2023 and people were very excited about it. Some of it's like just being pretentious
+for a paper, but some of it's actually like real complexity. You know, you don't have like a PhD, like a prior sort
+of ML background. How do you sort of come to grips with it? Like what were the best ways to get around it for you?
+I would probably push back on that a little bit. I don't think the math is actually that complicated. I think that
+like when you, you know, you see the PO equation or something with all the symbols, like if if that's your first intro to it, then it feels very
+complicated. But I think like if you were to show that exact same equation just like code, not maybe not pietorch
+code because that you also have to like understand, but if you just like did the naive implementation in like Python and like showed someone like hey this is
+this is kind of like how we're we're computing the loss here who was like a strong engineer like I think it's actually like quite groable. So yeah, I
+mean like I I don't think it's like the barrier entry is that high. I think you just have to like believe you can do it
+and then like spend some time staring at it. That would be what I would recommend is like uh you know you can read the
+papers and look at the equation. I I think actually this is one area where where OM have been super helpful. If I'm
+reading a new paper and I look at one of those equations and I'm like I don't understand how this new term they introduced intro like corresponds to
+like the these other terms then I can like dump like all the context around it into you know GPD5 and say like hey can
+you like write this out of Python for me and show me what what they're doing differently? And that's super helpful for kind of like my background I guess.
+Yep. The way I put it is I wish that all these papers would just publish with pseudo code or Python just straight up
+Python instead of math. Like you actually just need to look at the implementation. I know like Jeremy Howard's been beating
+this drum for for for years and I mostly agree with him. Well, I mean there there's a there's a little website called papers with code
+and like people just keep not following it. I remember interviewing the DPO guys when they when they were at Nur Reps and
+it was just like they were just very obsessed with like proving in principal equivalence to PO and like it was just
+it was very hard to follow. I'll definitely say that and I think like now obviously at some point like GRPO kind
+of took over the the general consensus. It was very strange because I think when DeepS first like started talking about
+it, it was viewed as an optimization. they tend to just generally couch
+everything as an optimization. But I think like the leader insight which I think you touched on in one of your blog posts was that no actually it makes
+comparisons independence rather than global and like that's that's actually what unlocks some some amount of like
+sort of self-supervised RL. Mhm. Yeah. I mean it's interesting
+there's real pros and cons if you're moving from PO or something similar to it to GRPO. There are some big pros. I
+mean, one pro is just sort of like operational simplicity. Like there's a whole extra model you need for this value model you need for PO that you can
+throw away with gRPO and that just like makes your life easier. You don't have to train that model, but also like there's like no hyperparameters around
+that model that you have to configure. So, so that that's nice. Another thing is the benefit that you're talking about
+which we've observed. So the way GRPL works is is you have to do like you know a set of of different uh trajectories or
+set of different rollouts um all in parallel with the exact same environment, the exact same conditions and then you score each of them and GRPO
+uses the differences in those scores to promote the trajectories that did better and and sort of like decrease the
+probability of the ones that did worse because they do it in sort of a group relative way. The only it lets you be a
+little bit looser with how you score them potentially like you don't have to necessarily have a globally aware
+scoring function. You just need some scoring function that is able to distinguish between this small set of things you have in front of you and then
+that's easier that's easier for a human you know if you if you tell a human which of these choose which of these is better it's easier for them to do than
+say like is this one good or bad in in absolute terms. Yeah. So that's nice. The big downside, the
+huge downside of GRPO and I think actually the reason why GRPO actually is is is likely to be a dead end and we
+probably will not be continue using it indefinitely. The fact that you need to have these parallel rollouts in order to
+train on it is actually like that makes the data generation much more complicated because you need a fully
+reproducible environment to be able to do these sort of parallel rollouts. And it turns out in practice that's like
+getting that set up is the hardest challenge today with getting RL working is is like actually designing this robust uh reusable you know environment
+that you can run all of this training in most companies and and that's not true like sometimes that's easy to do like
+like there's certain situations where where you can do that but for the work we do at least where we're training agents on real code bases to like
+operate like you know real applications it turns out it's like really really hard to sandbox those things in a way
+that's like totally reproducible and PO. Now, in practice, a lot of times when you're training with PO, you also will
+use an environment like that because it lets you do a bunch of runs and be more data efficient, but at least in principle, you have the option with PO,
+you can actually like purely train on like say real production traces of like real people interacting with your app.
+And so, you don't have to have a simulated environment at all, which makes the deployment like much easier.
+Can you double click on why it's hard to do the sandboxing? Because in principle, we just capture all the inputs. Yeah.
+Well, you don't need to just capture all the inputs. You need you need a system that reacts the same way a your
+production system does. That's and and in many different ways. And um so let's say you're you're Airbnb, right? And I'm
+bringing this up because this is like an example of one that like you know companies have gone out and built sandboxes. Like if you're Airbnb and
+you're trying to um you want to train an agent to like maybe you're not Airbnb, fine. You're you're a company like us that's trying to train an agent to like
+do really well at operating Airbnb and booking on your behalf, right? like you have to build a copy of the Airbnb
+website that reacts to you as the user the exact same way that the real one does with the same failure modes, right?
+Because if you don't include the same failure modes and bugs they have, then like one of those bug when one of those bugs comes up in production, your agent's going to have no idea what to do
+with it. It's just going to fall over. You also need to simulate if this is like a sort of cooperative agent, right? Where it's getting human input as well
+and kind of like working with the human to get something done, which in practice is the way a lot of these are deployed. You also need to simulate the user. And
+I mean you can do the naive thing and just say oh we're going to have a separate LLM that you know with a system prompt that is like the user simulator
+and we do that but it's like okay but like the breadth of ways a user might respond there's like a lot more
+diversity in that than the actual diversity you'll get in practice when you have this like simulated user. And so then it's like okay well is this
+environment close enough to how a real user would interact that like you know if if a user says something different that it's going to know what to do. And
+the answer in many cases is no. If if you're just purely training on kind of like an LLM user simulator, it's going
+to have its own idea of like what the correct way to answer is and the breadth of like a way a human might respond in
+the situation is is wider and and and your agent just may not be able to deal with that. Do you feel like it's hard to
+build the simulations as a company that needs to build the product that lets everybody do it or do you feel like even
+for the individual companies that own the codebase that are like domain experts in their own product is still
+just like a very hard infrastructure problem? I think it's still very hard you know like ideally all companies should have
+this anyway cuz they're if you're doing end testing like theoretically if you're following best practices you would have one of those set up. when we talk to
+enterprises almost universally that's like not something that really exists. So there are some startups like there's
+some companies we talked to that do have it and and we can just like use that but it's it's a very very small number that
+that actually have an environment like that and I think it's hard to do and and like there's lots of like weird bugs
+that don't show up in environment like that and and even if they do have a testing environment they don't have it populated with like full realistic data
+which is also like important so that the it it understands how to you know interact. So I think in practice it's
+hard in both cases. Maybe it's easier for the company but at the same time depending on you know the quality of the company's engineers it might not be easy
+for them either. Yeah. How do you classify the types of environments? So you have formal
+environments like a compiler you know you can put in there like you don't need to do any work they just work then you
+have these kind of like RL environment startups in a way that are building a bank environment. They're building these
+things that are not digital twins or whatever term of like the actual environments, but they're like close to
+it. And then on top of it, you have helping people trying to build the exact replica
+of their thing. There's obviously value in like the formally verified ones. We verified
+that. Do you think there's value in this like RL environment startups that are building like somewhat generic but test
+specific environments? And then if none of those work, then what do we do instead of gpo? I guess the the
+question. Yeah, I suspect there is value in that. You know, I think the you know, the
+folks buying those environments and training on them in the big labs would have the best knowledge on how well they work. I think they probably work okay. I
+think they probably also are like, you know, and we'll see maybe with the next
+generation of models released like how well they transfer. I would say so far um it seems like they don't train well
+enough like if if you use um you know OpenAI's agent interface it's like okay
+or if you use the computer use products that that everybody's putting out they're like okay but like not reliable enough to like actually like let go do
+something interesting unsupervised in the world and I think if the a you know if the environments they were training in were high enough fidelity then they
+would be good enough in the same way that like coding agents can go much further because I think that in that case we do environments that are much
+higher fidelity because it's a much simpler environment in a lot of ways. It's like it's a codebase. It's like maybe running a web browser. Like it's
+it's it's much easier to capture the full realistic environment in that context. For those who are interested,
+when you make a reference to our own environment startups selling to the big labs, they're selling it for a lot of
+money. Yeah. Like at least seven figures, right? Like I I understand. Yeah. I'm
+not a buyer. Please, please like drop data points because like people who are not in Silicon Valley don't know this and like it's like probably the current
+thing in VC which is is our environment startups. Um anyway, a lot of them
+there's like 20 of them apparently. Yeah. But it it's like a small number. I know that yeah all the labs are buying
+ADO but in a way it's almost like they don't even care. It's not a product. It's like they're basically like paying
+the company to build an environment for that services business. Exactly. But I
+mean if you're spending like a billion dollar in a you can specialize in like we are the one that does e-commerce like we are the
+e-commerce experts. So come to us for e-commerce. Go to the other guys for like social media. Go to the other guys for like I
+don't know. But I'm curious what your take is like how do you need to get the data out to make it fit in your training run?
+Especially when you get to like these larger labs. I think they have like very sophisticated post training pipelines
+and I don't know if there's like a way to just build a company where it's like you just send them a CSV of like data.
+It needs to be very integrated in it. But I'm curious what you've seen working with customers too. So for RL like the
+whole way this works is is you know it it has to sort of be getting feedback from the real environment. So I don't I
+don't see a world where it's as simple as like hey you can you know there's there's like a CSV type approach. I
+guess you could encode anything as a CSV, but if you try hard enough, um, for RL to
+work, you have to be looking at real runs ideally of your actual agent in its current state across within an
+environment as real as possible. So you have to like look at actually um and and like the data format is like actually super simple like it's just like
+basically a list of you know like chat completion messages. Um it's it's effectively whatever tool calls. Yeah. Your Exactly. Yeah. It's whatever
+your agent will be seeing and doing when it's running. So that the getting the data is not hard, but what's hard is like when you're doing one of these runs
+and your agent makes a tool call. Okay, now that tool call has to connect, you know, somehow it's got to get data back
+from something and that data has to look like it will look in in real usage. So setting up that whole part of the system is uh is the challenge. And then for
+just a reference job for more people, Web Arena is my first instance of this kind of thing where you literally have a
+Docker container that has like a clone of Reddit, a clone of Wikipedia, clone of GitLab, clone of CMS, and a clone of
+an e-commerce place. And I think since then there's like mind to web maybe. I don't know if there's other large
+well-known academic um environments where people are basically using these as benchmarks, but probably also it's
+pretty useful for trading. Yeah. So, so if you want to check out those things, yeah, you can definitely check there. I think the question for you is as someone
+who bet on SFT, then you bet on RLFT and then now you see these guys making a lot
+of money. Why didn't you go there? It seems to me like that definitely is a servicesheavy business at the moment as
+as it's presently constituted. I'm sure that these companies are all developing different kinds of secret sauce on like how to how to do this like more quickly.
+So, that's part of it. I I don't particularly enjoy services businesses. Um, but you know, I also kind of feel
+like we will move towards a world where either the big labs like it's one of those businesses where like the only
+customers right now are like whatever four big maybe maybe maybe six big labs that like you know are training these
+models on environments and I don't think I'm a little Yeah. Um but you know like look you you
+say the same about scale AI and and all of their competitors that are like you know many billion dollar companies that's have basically the exact same
+customer set. So, so yeah, may work out. Yeah, unless you I don't know if you
+want to do a small shameless plug for Varys. Oh, yeah. I mean, so Varys, one of our portfolio companies, they work with the
+people building the agents not with the model on like their internal tool call loop. So, they kind of observe all the
+internal traces and um build the data to then have like a open pipe do the RFT on the
+thing. I think in the enterprise we've seen a lot of that especially for chatbots. It's like the less sexy use
+case, but like there work with a lot of financial services company where their customers go in there and say, "What's
+my balance? Like when did I do this transaction?" And those are all tool calls, you know, and they need a way to
+test and improve that behavior. And the models haven't gotten that much better because these tools are like badly
+documented. They're like badly named. I think that's kind of like the the problem with a lot of the agent builders
+that are not AI native companies is like they just put this like very generic tools in the thing and then they expect
+it to work like magic and these simulations kind of help them also have the usual compliance things. It's like
+before shipping this we tested that it doesn't give financial advice. We tested that you know there's all these
+different things. So I'm curious to see how much the companies generalize. You know, I think like Varys has a lot of
+success in like highly regulated environments because they have different requirements. But I'm curious if you
+have a different way to segment the market of like when you think about RL, there's like environments that are like
+low stakes, there's like environment that are like high stakes, there's environment that have implicit rules that are made by the SEC or uh other
+government agencies. How you think about it? Yeah, I don't know. that that
+segmentation is is necessarily the most relevant. I I'd have to think more about that segmentation whether
+whether it's um you know that there's like a strong difference in how useful RL is uh across those sectors. Where I
+see the segmentation is something basically just like capabilities based where it's like hey if I'm trying to do
+something that's like much more advanced um and you know maybe like long horizon then RL can probably give me a much
+better behavior. And I might almost think that like yeah those sort of like more compliance Like I I feel like in
+those kind of environments, you you probably don't want your agent doing very much because then like you can't make any guarantees about what it might
+do. Um and so you're probably not doing these long horizon things and maybe RL is is not going to get you what you
+want. But I don't know. Yeah, I haven't thought about it too much. Yeah, I think like a lot of the customers don't necessarily end up doing
+RL anyway. It's almost like the simulation and the environment. It's like a way for them to understand the
+paths that the agent can take and less about we need to then use that data to do finetuning but I think it's like a it's
+going to be a spectrum you know what replaces the RPO yeah it's a good question we need the
+alpha yeah I mean I don't know is is the short answer I do think this this is like a
+fairly high salience question in the research community I think there's a lot of folks like trying to figure that out every paper has a variant like
+yeah but a lot of but I think you know the big question is like are we doing you know normalization based on grouping
+or in some other way right that's that's like I I would say like I would claim we're just going to keep calling it GRPO
+as long as the normalization is done within like a group even though yeah there's a lot of things that like probably should get their own names a
+lot of things that have tried to get their own names and and have failed on the marketing side I think something that like doesn't
+require group level normalization which a lot of you know older things didn't probably works but I think that the
+older things also are really finicky so there's there may other kinds of simplification and I don't know exactly what what those will be.
+Where do you put the prompt optimization thing? We did a dev day episode and we mentioned Japa and then everybody came
+out of the woodwork on on Twitter about it. Yeah. Okay. Tell me, have you or people you
+talked to tried Jeppa? I want to know like what I read the paper. I'm just like look like the prompt layer updates are not
+the same as weights updates which they're just comparing apples and oranges. And I I I talked with a few
+people I respect on on this on on the RL side and they they kind of validated it like the way that these grad students
+market their papers is their thing beats the current hot thing and the current hot thing is GRPO but like I they're
+just not that comparable. I disagree with that. Like I actually think they are comparable in the sense that like it depends on for what
+purpose, right? But like if I'm a company and trying to like get the best performance out of my agent, like I don't care if you're changing my prompt
+or if you're changing my weights. So if you get better performance on my agent, you know, I'm I'm I'm happy on that front. I do think they're comparable.
+And we've evaluated I mean we evaluated like So So their answer was you're going to do both. If you really want max
+performance, you're going to do both. Yeah. We valued everything from Disp and we we evaluated Jeepa as well. And it's
+like it just doesn't work. Okay. Like that's going to be the boat. Yeah.
+Jea doesn't work. It didn't work on the problems we tried it on. It just didn't. It got like a minor boost over the sort of like more
+naive prompt we had and was just like it it was like okay just kind of like our naive prompt with our model gets maybe
+like 50% on this benchmark and like Jeepa got to 56 and we do our own and we get to like 96. I mean it was just like
+not even comparable and so maybe we were holding it wrong. You see so so both sides are claiming
+skill issue right? So what they would say is you probably used it wrong. And then all people are saying that probably JEA JPEA guys when they when they set up
+the the GRPO benchmark they they it wasn't a very fair comparison which is exactly what uh my source said. It's
+hard to tell you know everyone has everyone has is trying to get to some version of the truth. Yeah. Uh but I what I will say is like we we want
+it I mean I don't know if I would say it goes so far as to say we want it to work but we certainly want to know if it works. It's like that's like actually
+very relevant to like the if it's more efficient to get there and you haven't been able to get working
+that's yeah it's actually kind of more credible now not now that you're like you know you you're part of a larger core weave then
+you're not obviously cuz I think Jeppa maybe is uh makes uh open pipe like less
+relevant I I totally would disagree with that because like the level we see ourselves operating at is actually we're not like
+RL bros trying to figure out like the use case for RL we're like Hey, we're working with all these enterprises. We all these big companies we're talking to
+and we're trying to figure out like how we make their stuff work better. And so like I personally I'm very motivated
+like if something like Japa works like okay let's let's build a product around that. That that's that's how I think
+about open pipe at least. No, I mean that's that's a good clarification to make. Even more so you actually took a sincere look at it and
+you concluded that there was nothing to to do nothing to build. Well, you know, maybe we were holding it wrong. So, we had Shenu on the podcast a
+while ago and like I think uh he's been a proponent of automatic prompt optimization and uh this idea that like
+you can do a lot more in the prompts than you can do in the weights and in principle I'm biased inclined to believe
+that something like a DSP something like a Jeppa works. Uh so I'm very surprised to to hear this.
+Yeah, like we keep trying it. You know, we tried the Mippro V2 stuff that was hyped before that. Oh also okay I should
+not bury the lead on the best argument for this which is it basically Japa models how the big labs do their system
+prompts it's uh genetic evolution you know and and they and they sort of incrementally
+uh evolve based on like the overall evals that they have it's slow because it's done by humans but Japa
+theoretically improves it automates this okay hold on is the claim that the big labs have something uh this is this is
+new no no no this is philosophically the same I'm not saying like, "Oh, sure." But like you're injecting a
+whole lot of human intuition and kind of like potentially out of band. The best model in the world, which is
+humanity or like smart humans. Uh, and now we're doing Japa using dumb
+LMS, right? But they're also like the humans can bring in out of information that like maybe is not captured in the actual
+like, you know, the eval like they can be like, "Oh, yes, technically this did well on the eval, but it's like not really, you know, like I would suspect
+that a lot of that ends up getting injected through that human being in the loop." Yeah. Yeah, I've always been very
+surprised at how these guys work on their system prompts which are tens of thousands of words long and there's no
+oblations. They just kind of pick what seems to work and then chuck it in there
+and that is the cloud system prompt. And are you a success?
+Is GPD5 the first model that had a prompt optimizer by one of the large labs? I believe so, but I don't
+remember. Uh, Cloud Workbench had this like a year and a half ago if you see it that way. It just wasn't like fully
+automated, but it was extremely good for it time. I kept telling people about it. Nobody believed me. Do we know if they used it internally
+called Workbench? Yeah. Okay. Why not? Oh, I don't know. Like I I just my experience, you know, knowing a lot of
+people at these labs is like they launch a lot of products because like some team is super excited about this product, but that I wouldn't put that much weight on it
+just because they launched it for some measure of use internally. I I I'm sure I talked the guy people I
+talked to are biased. I don't know if you fully explored that. Yeah. No, I think that's um it's just
+interesting that now it's been acknowledged that like the LLM can improve your prompt. And so I think like
+Japan now is also writing this wave of like okay maybe we can do this programmatically. But I also think the
+long tale of people just prompts really badly. And so I think there's some value there versus once you go into RL you already
+have like a more sophisticated audience. You know, like who gets to do GRPO? People that are really smart. Who gets
+to do prompt optimization? Like everybody's trying to do it. So yeah, that's right. Maybe maybe our baseline was was
+I know your naive prompt is probably like, you know, top 10 percentile of prompts that people put in these.
+I'll take it. Yeah. Yeah. And then the other thing that comes to mind as you were talking about things injecting things out of ban and all
+that, I think it's a there's a broader trend that I'm tracking for Wolfor 26, which is the move to online evals. Um,
+the way that we do evals today is probably too locked down. You're kind of fighting the war that you already know
+should be fought and you're not fighting the wars that you don't know about cuz you didn't you didn't plan for it. Whatever. How can we sort of move more
+online evals into our JEPA process? And maybe that's that's what it is. That part I'm much more bullish on. And
+and we can make the analogy like we can we can pull in kind of like RL intuition here, which is if you're doing Jeepa on
+a sort of static data set of like, oh, this is the input. this is like what makes a bad good or bad output. Then
+like as you're updating your prompt like your information, the data you're training on becomes less useful, right?
+Cuz it's generated by, you know, because it's based on kind of like the problems you were running into before. And that's
+the same problem you have with with RL where where you have this concept of being off policy where it's like as you're doing training you really want to
+be training on rollouts that came from the latest version of your model cuz if you train on some that came from further back then it's like it's sort of stale
+data and it's like not it's no longer representing the current issues with your model and so if you try and correct
+for the issues that existed back then it it may not actually be helping you that much. And I think you know for either RL
+or prompt optimization that's definitely true. I think that like one way to apply
+that in practice is exactly what you're saying where you're using the actual data from your your real evals. You have
+some way of saying like hey either people flagging these or no I'm flagging these or some way of saying like this was a good or bad output. I totally
+agree with you that like if you're bringing that into your process I'm like much more optimistic that you're going to get good results.
+Yeah. And the pipelines are not set up like this is like analytics and UX people like trying to being drawn into
+the ML process which they've never been done before. If I had to make a bet as a big theme for next year, this is going
+to be it. No, I I I agree. And I I mean, I think that like all of the sort of observability people like platforms
+see that and like are trying to figure out what the right shape is. I haven't seen the right shape yet, but yes, I it
+seems like a like a a theme for next year. Statsig maybe. Yeah, I haven't I haven't used them, but Opening Eye seems to like
+them. Yeah, I mean like uh I do think like buying you know an experimentation
+platform makes sense and like you know I think it's start of like I've said before on the podcast I think that I'm
+very bullish on model routing as a feature but less bullish on model routing companies because uh of exactly
+stuff like this where like it is just going to get get absorbed into the model. It's it's a very big part of building the process. You probably don't
+want to and it's not that hard like it's not rocket science. this it's you're just like connecting pipes and making
+sure things are set up so that it's easy to use that data. I have a question for you a general question. So what fraction of tokens
+generated by say like the end of 2026 do you think are going to come from open source models versus proprietary models?
+Oh that's a fun question. So we have an answer from Ankur from Finest where he
+was like it's 5% and going down. M I think it's going to go up because of
+the amount of enterprise adoption of open models that I'm seeing and also
+there's a lot of demand like there's the enterprises would much rather be on open models if they actually could get the
+performance they're looking for. Yeah. For cost, for privacy, all that stuff. And I think like basically
+honestly it's just literally like we may have hit quote unquote AGI in a sense of
+like it is the the average LLM can is capable of the work of the average human. Not the best human but the
+average human sure like it's actually pretty decent at customer service like
+and it's actually pretty decent at like I don't know transcribing things from PDFs whatever. So like yeah I mean I
+totally I think I think that should rise but people who believe that it should rise to like 50% are out of their minds
+and I think it's a true question. We should take coding out. I think once you take coding out I think yeah it can be
+like 15 20%. But I think with coding it's still going to be very low because like these max plans are like so
+subsidized and so many tokens are being generated like entropic is like you know 50% of the revenue. Is your claim that
+it'll it'll mostly be, you know, that coding will mostly be closed models because the tokens are subsidized or
+because the models are just so much better than I think as long as I mean I'm paying 200 bucks a month and it's like I'm spending
+thousands of dollars like by accident. By accident I paid with like my credit card and I spent like a hundred bucks in
+like an hour and it's like this is like the the thing that nobody wants to talk about for Anthropic. Like Adtopic went from like 1 billion in
+revenue to 5 billion and it went like woohoo yay and then like what's the margins? You have this like goose meme going like what's the margins?
+Um they say it's like 6%. There you are part of the 6% that is abusing
+everything. So everyone else I'm not abusing I'm the leader. It's not like I'm rotating accounts. I'm just
+using you know it's like Yeah. Yeah. But like through you people like hear about cloud code they pay the
+$200 a month and then they don't use it and they they they pay for your infrance. Yeah. Thank you. Thank you everyone. Keep doing it. right to go away.
+But I think like I don't really see it's hard to see a world in which Quen coder or whatever model replaces that because
+between quality and cost it's like to make to generate this amount of tokens for 200 bucks a month. I don't know how
+anybody can like offer like together fireworks. They cannot really offer it at that price and the quality is not as
+good. But the reason they can't offer that price is is because of the subsidies, right? which which is not like a long-term like sustainable
+dynamic. I mean it's interesting because so both Entropic and Openi are building their own infrared and like they're
+going to get to a place where they're going to have idle GPUs that they own and so they will also be incentivized to
+have 100% utilization and so you know they will subsidize some of it just the same way you know if you go on SM SF
+compute like you pay a buck 40 for like an H100 instead of like the 220 listed
+price on AWS. Um, so I think it will continue. But again, it depends on
+whether or not they actually have the 500 billion like they were saying, which I think they do. You know, just to be clear, I think Stargate will go online,
+but once it goes online, then it's like, well, if they figure out how to pay for $500 billion worth of compute, then then they probably can subsidize for a while.
+I think they have the 500B, they're going bigger. Isn't it obvious? How what do you mean by have like a
+At the start of this year when they announced Stargate, people were like, "Oh, you don't even have 10." Like Elon was like, "You don't even have 10. M
+whatever. And then Satia is like, I'm good for my 80. But like now now we're seeing all the money start coming in and
+like probably it's in the order of like 200 300 billion like that you could probably get raised and and committed
+and they're going to get the rest. Like it's it's fine. Like I think that the plan is actually a lot. I just can I just say I love this
+industry. It's like yeah they've got like two or three hundred billion and like what's another couple hundred billion?
+There's no other industry in the history of the world where you can see. Yeah, it is. It is stupid. But like also like do
+you doubt it? Like I I don't I like Yeah, that's fair. No, like I I I literally like after last
+week, I think maybe two weeks ago with the whole Oracle, Nvidia, and then even AMD deal, I'm like, "Oh, like these guys
+not only they've locked down Stargate one, they're working on Stargate 2, whatever that uh that is." And and like
+the sheer ambition is like freaking crazy. There is still one more shoe to drop which is the nons sovereign wealth
+funding that OBDI needs to get which they've promised to drop by the end of this year and my money is on they have
+to do a coin like I'm not a crypto guy at all but like you know be like an open AI coin
+this is the one AI founder that has his own coin already and like he needs more money and he said that they will come up with new
+innovative financing meth methods what else is there yeah I mean they're already in the token selling
+business like But you got to it's a great line. Uh like buy an OB token that translates to
+a GT5 token. Like you sure it's a stable coin.
+H you'd have to you'd have to get you'd have to get a lot of political buy in I think to to take that level of risk.
+The White House that is most crypto friendly since the dawn of time. Well, I guess like Elon's out of there now, so maybe they can get the make make
+the friends. Yeah, I think it's doable. We'll see. You know, like uh who knows? Uh yeah, I I for what it's worth, I've uh nobody's
+like this is a this is a me theory. I I don't have any insight information. Yeah. Should we go back to ruler?
+Yeah, sorry. Right. Open fire. Anyways, we were saying I think the story takes us to July 25 when you release ruler
+which we call easy mode for our rewards. And then I mean shortly after you got acquired in September. So maybe you just
+want to talk through the summer you know what was the vision then maybe how the acquisition came together. Yeah absolutely. So, you know, I
+mentioned my my initial like opinion of like how likely this this direction was to work was maybe 25%. We're up to, you
+know, 55% or so. And and ruler is actually a big update on that got me from the 25 to the 50. So, so let me,
+you know, I guess just for context there. So, basically, there are several problems you have to solve if you want
+to use RL successfully. the problems you have to solve. I mean, some of them are just like really dumb basic like, hey,
+you got to get the infra and like the libraries have all really sucked and been built by, you know, PhD students
+who don't know like how to build reliable software. So, so like there's there's like all these like practical issues that that we're working through.
+So, that's one thing and that's that's kind of what we're trying to solve with art. But even after you've got that solved, you've got like major issues
+which is like you you got to know if your if your agent is actually or you know, whatever system you're using on RL
+is doing a good job, right? That's that's fundamental. You have to have a reward. You have to know it's doing well or poorly. Sometimes that's easy to do.
+If you're solving like a math problem or something, you can come up with a data set of math problems and the known solution and check if it's the same. The
+on the coding side, there's been a lot of like innovative work around I mean there's first of all like a lot of open data and and a lot of you know there's
+like I think the approach a lot of companies take is you you find existing test cases and then you break them but
+there's sort of like a way to figure out if you know you you can run the test case right and see if if your code fixes
+it or not. In a lot of other domains it's like much more murky. It's like what is a good job versus a bad job? How
+do I know if I did a good job? And you really need that information. So, we've tried a bunch of different things. Ruler
+is a library that we released. Um, which let me let me relative universal LM elicited rewards.
+Thank you. Yes. And the way it works is basically this depends on the sort of
+GRPO insight which was mentioning earlier that you actually don't in or with GRPO it has this nice property
+where you don't have to have like an absolute judge of the truth. You just have to judge relatively. And so simplifying it a lot. basically just LMS
+judge on a whole group. So you say, "Okay, this is the task I'm trying to achieve. Here's four different runs of
+an agent trying to achieve it. Which of these did best?" And it it stack ranks some. And it turns out that works
+phenomenally well with GRPO like way better than I expected, way better than you know anyone who kind of like I
+talked to before we actually tried this expected because it's sort of in in in
+the the LMU judge. It can sort of like self- ground because it's it's just getting these relative ranks, right? So
+it doesn't have to like have like a an omnisient view of like what good or bad looks like. So that has worked at
+basically everything we threw it at. Um we've done it with a bunch of client projects. We've done a bunch of our own customers. It basically just works. Like
+it's basic like I I honestly kind of feel like the reward assignment problem is like fairly solved. Yeah. Which is
+it's fantastic. Just any LMS judge off off the hook. Like we've tried it with so many things. It's like so one of one of the results we
+published was we used Quen 2.514b as the model we're training and as the judge we used Quen 2.532B which is like
+not I mean it's fine but it's like not a it's it's much worse than any Frontier model right and even with that combination we were able to get our our
+agent doing like state-of-the-art better than any Frontier model on on the task we tried it on even with like an
+extremely weak judge model. So it's it really doesn't depend on having like a really great judge model um in practice.
+So yeah, it's it's just like it's just not something we've had to worry about since then at all. So that's kind of like checked off. So that's sort of like
+got me like a significant increase in like okay, this is actually something people can apply. This is now something that's packaged up. People can just use
+our it's we open sourced everything. You can use it off the shelf. If you stick in your training run, it will probably
+just work. So that leaves the remaining problem which we I guess we were talking about them out of order, but like that rem leaves the the environment problem,
+right? That's like the one big remaining piece that like we don't know yet how to automate or remove and requires a lot of
+manual work for for every single task. for listeners, you know, this is why I kind of refer to it as self-supervised
+because it is like removes uh more and more of the human judgment and like the history of machine learning all the way
+from like I guess the the the start of like uh uh imageet and everything uh is
+is really like that insight of like you should just take humans increasingly out of it and scale up the data you can just
+throw in there with no supervision. Yeah. Yeah. Totally. Yeah. It's it's really awesome. Are you bullish on um dedicated LMS as judge
+models? Have you looked at those? Bespoke Labs. We did an episode with them and they're they're really trying to carve out a
+niche in there. We've looked into it. We we've trained some ourselves. We've also like used some off the shelf. There's there's uh
+there's an evaluation benchmark that the AI2 people uh put together and a reward bench. Um and so reward bench is kind of
+like trying to benchmark models on on serving as reward models or LMS is judged in your mind. It's same same thing.
+Yeah. Yeah. Yeah. Um they have Yeah. mildly different depends on the task like LM is judged is is is usually
+more sort of product facing and reward is reward modeling is much more specific within like a chat task.
+Um which is that's that used to be the old meaning of reward model. I don't know maybe terminology has changed like I I
+think I think they're they're pretty equivalent. I understand that. Yeah, I can I can see your side. Anyway, so so yeah, reward bench is is
+kind of like and so we've tried a bunch of off that. Um the thing is like I guess my my maybe meta take on this is
+any task that is extremely common is going to end up in like as a specific
+like part of the training data for the frontier labs and LMS judge is just something everybody is doing in so many
+different contexts that you have to assume that all of the frontier labs have a bunch of like LMS judge style tasks that they're training their models
+on. And I do believe that if something does kind of like make it in in a like
+more than minor way into their training data that like they're going to do at least as good a job as as a dedicated
+model. So I don't think there's probably a lot of alpha in dedicated LMS judges just because it's something that like
+the let me caveat that and say like if you've got like a very very specific task that's like weird and has weird
+requirements and you have a lot of data on what's good or bad then like training a reward model for your specific task I think could still work. um or you know
+fine-tuning an LMS judge on your specific task could work. I'm pretty bearish on like a hey this is a model
+that is trained as an LMS judge but it's a generic LMS judge that can be used to judge anything. I I just don't think you're going to beat the Frontier Labs
+on that. Yeah. One other version of this that is not quite an LLM, but some people are thinking about it is something that
+we're working on for a future episode which is world models. Um and uh sexy.
+Yeah, very sexy. first applied in video as far as I can tell for Genie 3, Genie123 and then and now with code
+and potentially with virtual cells for for uh for AI bio. Any exploration there
+that that's interesting to you? Yeah. Um so we've been playing around with it a little bit. It's one of the directions that I'm like fairly
+optimistic on for solving the environment problem specifically because if you think about it like like a world
+model it's it's simulated environment. That's like what it its whole purpose, right? So if you get in an LLM like
+thing, not like a Docker. Uh, yes. Yeah. Yeah. So, so it's it's like you know whatever hallucinating,
+generating, imagining the responses you'll get from the world. So, you can imagine, right, if you had like a really really great world model that you're
+training on. Yeah. It's like your your agent that you're using, it would go out and make some tool call and then this
+world model would generate, hey, this is like probably what the tool call and if if you have a smart enough, strong
+enough one, then it could keep its own, you know, effective internal state of like the changes you made so far and how that affects. So we've played around
+with it some. You know, I think if we can get it to work really well, then that could be a solution for the environment problem where you just take
+a bunch of production traces and use those to condition your world model so it understands your specific system and
+what it failure modes are and then train against that world model. Um and uh and works and you know and and the resultant
+the you know agent that you train with that would would then be able to perform in your real environment. So I I do think it's like a like a really
+interesting area of research. Yeah. And did you see the meta code cold world model um work? I don't think I saw that one.
+Okay. Yeah, it was like two weeks ago. Uh we we've just confirmed that the guy for uh AIU code in in uh in November and
+it's it's really interesting like the world model is uh Oh, sorry. You're talking about the meta one. Yeah. Okay. I missed. Yes, I did. I
+I saw that one. I said a lot of syllables so it may may not have parsed but like yeah it's literally like having a debugger as the environment as the
+world model and and let opening up the execution trace to the model to see what's going on and see the state and
+track the state as the code executes seems to be smart and you know exploits
+the unique situation of code environments where we can actually do these things. Mhm. Yeah. I think the way they envision
+that model being used is a little different. Like I think they're they're they're actually I'm curious. I'll have
+to see the talk. Um but my understanding from that paper is like the goal they're imagining is this is almost sort of like a pre-training step and then now that
+this model understands code really really well, we can then use it as basically like a code generation um or a coding agent of some kind. Okay. Yeah.
+Which which I think makes sense. That's almost more like a different kind of pre-training I would say. Um the way I'm
+interested in applying world models is as not is basically as its own end, right? where it's like actually the goal
+is to come out of this with something that simulates the world which is not something you really need in code at all cuz it's so easy to like run code and
+you don't need to model what will happen if you execute this code typically because you can just execute the code and and see what happens for for
+training purposes but it closely models how we think about code when we code is we kind of mentally
+execute the model as we type and we go like is that what we really want yeah I don't know anyway it's the first model that metas released since the MSL
+reorganization uh we know you know just based on our context that they're very very interested in code models as a path
+to AGI which I I'm also of course very interested in. Um I know we kept in here for a while.
+Let's wrap up on the acquisition. So a lot of people say you know companies are not sold, they're bought. What was that
+process like for you? Did it just happen? Like what was the behind the scenes? Yeah. So that was driven by actually
+mostly the weights and biases founding team. Yeah. So so yeah, Lucas and Sean um uh
+particularly. So they uh you know had recently been acquired by Cororeweave and Cororeweave was looking to you know
+continue um growing up the stack and so yeah they they they approached me were like hey you know like no pressure but
+like this is like an area that we think is really promising and we you know would you like to work here and so that's how the conversation started. It
+was uh like long it was pretty painful. Um there were there were points uh as
+late as you know like the week before we actually signed where it was like unclear if it was actually going to happen. So that part was super painful.
+However, we've been there a month now. We we just shipped a product yesterday, which I'm super excited about. It's been fantastic working there so far. Like I
+was like very concerned. I was like, "Okay, yes, this is great. We make make a lot of money by selling our company, but like is the work environment going
+to like really really suck?" And I was like, "Well, I guess that's just a risk we'll have to take." It's been fantastic. Like it's it's honestly been
+way way better than I could have imagined. Did you go down to the office the the one down here? I was there today. We work for So, I'm
+based in Seattle, so and they have a small office up there that we work for. Way biases office in San Francisco is
+fantastic. If you have the chance, go visit. They do do all hackathons and co-working things. Yeah, there's a hackathon going on in a
+month or so, I'm sure. Uh, but yeah, I mean, so so do you
+consider yourself working for Weights and Biases or Core Reef or both? And Open Pipe, too. No,
+no. Yeah, it's a we so we so we I I report to the Weights and Biases like
+founders. So, we're within that organiz in the or chart. We're there. I don't know like branding wise they're trying
+to say everything kind of fake that that's not being s sold to like big labs
+is kind of weights and biases so like our stuff we're launching is weights and biases branded it's not um yeah not not
+core we've branded as much I don't know it's still like they're still figuring it out and what's the product you launched
+we launched serverless reinforcement learning basically it lets you offload all of the GPU management you like you
+don't have to worry about crashes and out of memories and like you scaling up and down. Um, we handle all that for you and you just like define
+your environment, you define your reward function and then you just like every time you run a step you kind of like
+ship back to our back end, hey, these are the trajectories, these are the rewards. Now update my model and we just like make it work for you. It makes it
+way easier. Yeah. Okay. Very thinky like it is very thinky like I I love the
+thinking machines launch. I I think they have a really good idea. It's also very validating. How did this take so long to appear?
+Like it seems like I don't know. Yeah, we but that's I felt this way about
+everything. Like there's so many things that should exist like clearly. I just think there's like still not enough people like smart people working in this
+space. Like honestly, we need like I realize that there's like you know like a lot of people. It just feels like there's still a lot of low hanging fruit
+nobody's doing. Okay. One thing I saw from your your post was uh your northstar is the RL team at Coreweave is
+to build an world where every agent learns continually from his real world experience. So, you're touching on the
+hot topic of the moment, continual learning. What else do we need to get there? I super believe that and like that's
+basically the vision where I'm like, you know, I keep talking about these percentages, 25 like if we get to the world where we build that um then I
+think it's just like the advantages are huge, they're clear, everyone should just deploy their their agents that way. Um, we want to be like the team that
+builds the the software um that makes that easy to do. So I talked to a lot of engineers at our customers and they're
+trying to deploy agents and it's so easy to get the initial prototype and like something that like kind of works well.
+It is so hard to get from that to something that like you are confident is reliable enough to actually deploy in production. And when you actually look
+at what those failure modes look like, it's like, oh yeah, like we know if it gets in this situation or if it gets like these kind of like inputs, like it
+behaves funnily, but then it's like, yeah, you can update your prompt to to address that, but like that's not scalable cuz at a certain point it's
+like going to start breaking other things. You know, you don't know what it's breaking. You really want some way to just like say, okay, look, this thing
+you did there, that was the wrong thing. Just like adjust this behavior when you get in this and then, you know, otherwise carry on, right? And that's
+what we can do with RL and that's what we can do with with continual learning is like we don't have to like have this concept of like oh up front I'm like
+trying to make the perfect model that solves everything. It's like I'm trying to make a model that's good enough. I can deploy it in production and then
+when these errors come in I'm going to say oh you know exactly this I mean very analous to how you train a human
+employee like be like oh no actually that's not what you should do in that situation. All right fix that and carry on. And that's just going to make this
+whole process so much easier. And I think that you know like I think that there is today like 10 times as much AI
+inference that could exist than is existing right now just purely with projects that are like sitting in the
+proof of concept stage and have not been deployed because there's like huge bucket of those and it's it's all about
+this kind of like reliability issue where it's like okay like it it works in controlled circumstances there's areas where it doesn't work and so if we can
+solve this problem there's that like 90% of the like inference market like addressable market today that's just
+going to like come online because we've solved that problem. So, um that's what we want to do. Um I'm super excited about it and like I think we have very
+concrete ideas on like the specific pieces we need to make that work. Uh and we just have to execute against them.
+Do you feel like the online RL is more susceptible to like the reward hacking especially as you're like shortening
+this loop and like you don't spend as much time like looking at the different checkpoints? I'm not that worried about it. Uh, and
+the reason why is because it is reward hacking is quite easy to detect once it
+starts happening because once the model's found some hack, it just starts like doing it all the time. It's like,
+oh yes, this work great. I'm just going to keep doing it. And so you you you like notice very quickly, wo, it's doing this thing. And assuming you're using at
+least in part an LM as judge to like determine which ones are good and bad, it's so easy to just throw an extra turn
+and be like, hey, that like weird thing that you keep doing, like if if it does that, like that's bad. Give it a low reward. So we've we've done this with a
+bunch of customers and like reward hacking does happen but like you you just see it and you like adjust your you know reward prompt and it just goes
+away. What's a thing from YC that guided you through your entrepreneurship journey
+and what what's one thing that maybe you like find that you disagree with YC on? Oh that's a good question. One thing
+that I that I I really identify with and I've tried to do a good job is kind of like, you know, sort of I think they say
+like hold your um problem tight and your solution loosely, right? Where it's like that's what you did. Yeah. Spend a lot of time thinking about
+what is the problem people are trying to solve and then it's like don't be too bought in to like the way you're solving
+it today. Um I think that's super important everyone, you know, it's it's very easy to to get that balance wrong
+if you're not thinking about it very consciously. Something I disagree with, it's a good question. I think there there's lot lots of things I disagree
+with, but I don't have it like cached in that direction in my brain. Um
+I don't know like I like I I definitely have disagree with lots of specific pieces of advice, but um uh yeah, I
+don't I don't have like a great answer right now. I'll bridge it for you in case in case something comes up. Uh Sam Alman's like, you know, everything I
+said as president of YC was wrong for OpenAI, right? Like do B2B ended up
+doing B TOC. you know, you should ship like products often like ended up being still for three years.
+Yeah. Yeah. Actually, I think that that second one does resonate with me a lot.
+Like we have tried to ship really quickly and just kind of like sort of like follow the gradient of the market.
+I think if I do another startup, like, and I don't know, maybe this is just me like being beat up by the market too much. if I do another startup like I
+would like I think at at least some points I probably would have done better to be like heads down and execute on my
+vision for longer and like kind of like go for the more ambitious thing but that would take longer to sort of like prove value which is definitely not the YC way
+but I think if you have like I don't know a good vision and good taste then like that that can like work quite well.
+Yeah, we'll see what that is whenever that comes out. But uh thanks for your time. This is a great overview of everything.
+This has been a super fun conversation. Thanks to both of you. Awesome. [Music]

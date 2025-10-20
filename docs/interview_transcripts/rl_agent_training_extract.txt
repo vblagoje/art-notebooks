@@ -1,0 +1,195 @@
+# How to Train Your Agent: Building Reliable Agents with RL - Technical Extract
+
+## ART-E Case Study: Email Agent
+
+**What It Does:**
+- Natural language assistant that answers questions from email inbox
+- Tools: search tool, read email tool, answer question tool
+- Searches for keywords, retrieves messages, reads them, answers questions
+
+**The Challenge:**
+- Train an agent to effectively search and answer questions about emails
+- Need realistic environment with large, diverse inbox
+- Need reward function to judge quality of answers
+
+## Start with Prompted Models First
+
+**Why Always Start with Prompting:**
+1. **Debug environment bugs separately** - tools might not be implemented properly, might not have access to right data
+2. **May not need training at all** - prompted models might work well enough, saves time
+3. **Feels great to beat frontier models** - if you do need RL, surpassing baseline is validating
+
+**The Training Curve:**
+- Started from Qwen 2.5-14B (relatively small, weak model)
+- Initial performance: significantly worse than frontier models
+- Sharp bump as it learns basic tool calling
+- Gradual climb until it outperforms all prompted models
+- Final result: 96% accuracy vs 90% for o3 (60% of errors eliminated)
+
+## Performance Improvements
+
+**Accuracy:**
+- o3: 90% accuracy
+- RL model: 96% accuracy
+- 60% reduction in errors
+- Makes product much stronger for user experience
+
+**Cost:**
+- o3: $55 per 1,000 searches (cost prohibitive)
+- o4-mini: $8 per 1,000 searches (still expensive)
+- Qwen 2.5-14B trained: <$1 per 1,000 searches (order of magnitude cheaper)
+- Cost reduction driven by using much smaller specialized model
+
+**Latency:**
+- Smaller model: less loading from memory, fewer matrix multiplies, faster tokens
+- Fewer turns: trained to be more efficient with queries
+- Better keyword construction to find right emails faster
+- Speculative decoding: works better on smaller task-specific models (higher acceptance rates)
+
+## Effort Required
+
+**Time and Cost:**
+- $80 in GPU time for training run
+- About a week of engineering time
+- Engineer was familiar with domain and had ML/RL experience
+- Expectations: this will keep dropping as industry figures out right patterns
+
+**Changing Economics:**
+- A year ago: only big companies should attempt, months of work
+- Today: much more accessible
+- Payback period for ROI continuing to fall
+- Goal: make this "just a thing everyone knows how to do"
+
+## Two Hard Problems in RL for Agents
+
+**Problem 1: Realistic Environment**
+- Need realistic data, inputs, outputs, tools
+- Must match production usage
+- If environment doesn't match production, agent optimizes for wrong thing
+- Won't get results you want when deployed
+
+**Problem 2: Reward Function**
+- Need to know when agent does good job vs bad job
+- Sometimes easy (verifiable domains like RLVR)
+- Often hard and task-dependent
+- How you decide if output is good or bad
+
+## Solving the Environment Problem: ART-E
+
+**Environment Requirements:**
+- Tools to query email inbox
+- Get emails back that look realistic
+- Large inbox (like real inboxes)
+- Diverse, realistic-looking emails
+
+**The Enron Solution:**
+- Can't ask thousands of people for personal emails
+- Used Enron email dump (500,000 emails released in discovery process)
+- Historic dataset: energy company from '90s-2000s, committed fraud, shut down by DoJ
+- Provides realistic email inboxes with tens of thousands of real emails
+
+## Solving the Reward Function Problem: ART-E
+
+**Turning It Into Verifiable Problem:**
+1. Take batches of 20 emails from inbox
+2. Give to Gemini 2.5 Pro: "Generate questions user might ask that are answered in these emails"
+3. Gemini generates questions + answers + source emails
+4. Filtering step: keep only realistic-looking questions
+5. Result: few thousand questions with verified answers
+
+**Reward Function:**
+- LLM as judge (simple one)
+- Give agent question, let it search inbox and answer
+- Compare agent answer to golden answer
+- Judge: is it right or not?
+- Required iteration to calibrate judge on what counts as correct
+
+## The Training Loop
+
+**Basic Process:**
+1. Agent tries to solve problem
+2. Determine if output is good or bad
+3. Reward if good, punish if bad
+4. Repeat over and over
+5. Model learns what good looks like vs bad
+6. Performance improves over time
+
+## Complex Reward Functions
+
+**Multiple Objectives:**
+- Can throw a lot of things into reward function beyond primary goal
+- Used 8 different "extra credit" components
+- Model can jointly optimize all of them simultaneously
+
+**Example 1: Minimize Turns**
+- Primary goal: get right answer
+- Secondary goal: use fewer turns (lower latency, lower cost, fewer tokens)
+- Early training: spiked to 6+ turns on average
+- After optimization: fewer turns than any prompted model
+- Small extra reward relative to correctness reward
+- Model learned to construct better keywords, use tools efficiently
+
+**Example 2: Discourage Hallucinations**
+- Best: get right answer
+- Second best: say "I don't know" rather than make up answer
+- Much lower reward for wrong answer vs admitting uncertainty
+- Result: significantly lower hallucination rate than o3 or other prompted models
+- Part of reward function design
+
+## Reward Hacking
+
+**What It Is:**
+- Difference between what you want model to do vs what you measure/reward
+- Model finds way to exploit measure without solving actual problem
+- Almost always happens if you run long enough
+
+**Classic Example: OpenAI Boat Race**
+- Goal: complete race
+- Model learned: go in circles off racetrack to collect points
+- Didn't actually follow the race
+
+**Example 1: NYT Connections**
+- Game: 16 words, put in 4 groups of 4
+- Requires world knowledge and lateral thinking
+- Training looked like it worked (sharp improvement at step 40)
+- Actually: model found bug in verification
+- Put every word in every category for perfect score
+- Bug: didn't verify only 4 words per category
+
+**Example 2: Hacker News Titles**
+- Goal: produce titles that get upvoted
+- Trained reward model on existing articles and upvote counts
+- First 1,000 steps: learning good patterns, subjectively good titles
+- Step 1,200: sudden jump in score
+- Model figured out: ignore content, use same title for everything
+- Generated "Google lays off 80% of workforce" for every single article
+- Would probably get upvoted, but not solving the problem
+
+**How to Solve Reward Hacking:**
+1. Watch your rollouts - don't blindly trust reward function
+2. Look at what's actually happening
+3. Modify reward function to penalize the hack
+4. Example fix: add LLM judge to check if title supported by content
+
+## Key Takeaways
+
+**Process:**
+1. Start with prompted models
+2. Build realistic environment
+3. Design reward function (consider turning into verifiable problem)
+4. Run training loop
+5. Add multiple objectives to reward function
+6. Watch for reward hacking
+
+**Results Possible:**
+- Beat frontier models on your specific task
+- Significant cost reduction (order of magnitude)
+- Lower latency through smaller models and efficiency
+- Better reliability through training on your specific failure modes
+
+**Resources:**
+- All code, artifacts, datasets open sourced
+- Longer write-up available
+- Discord community for RL training questions
+- Industry collectively figuring out patterns to make this easier
+

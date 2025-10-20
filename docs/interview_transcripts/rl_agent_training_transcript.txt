@@ -1,0 +1,624 @@
+[Music]
+um hey everyone glad you're all here
+this is the reasoning and reinforcement
+learning track uh on the afternoon of
+the last day of the AI engineer world's
+fair glad you're all here glad you're
+sharing it with us today what I'm going
+to talk about is uh a very specific case
+study um that we did uh this case study
+I'm going to talk about lessons learned
+very concretely um what did and didn't
+work how we able to build an agent that
+worked well with reinforcement learning
+uh all of this uh everything that I'm
+talking about in this presentation this
+is an open- source codebase that we
+built um we wanted to share these
+learnings and I'll I'll I'll share that
+link with you at the end as well um for
+those of you who want to replicate what
+we did um so what is the project we're
+going to be talking about it's a project
+called ART E it is a natural language uh
+assistant that helps you answer
+questions from your email inbox so I'll
+give you an example of what we're
+talking about here um let's say you want
+to ask you know in this case our example
+question is when is Sherry's move to
+Portland targeted for so you would ask
+this question to the assistant it then
+goes and it searches your inbox it's got
+several tools so it has like a search
+tool it has a read email tool and then
+it can actually answer the final
+question you can kind of see if you if
+you look here what's going on behind the
+scenes this is important so you get a
+sense of kind of how this agent works
+and as we're talking through how we
+built it how we made it work um
+hopefully that that helps uh make the
+conversation very grounded in a specific
+task so anyway you see the agent it's
+it's you know searching for certain
+keywords it get those messages back it's
+in reading one of them and and answering
+the question that's that's what it does
+okay so um question you know once once
+we've decided this is kind of the the
+task we're trying to solve why would you
+re use reinforcement learning for this
+specifically um and uh and the answer is
+like to start with you shouldn't in fact
+to start off with we did not um so the
+first version of this agent once we
+decided we wanted to build this we did
+we didn't use any reinforcement learning
+at all we purely built this on prompted
+models and this is the first lesson from
+this talk uh that I want to share is I
+would generally always recommend
+starting with getting the best
+performance you can with a prompted
+model before going to any training
+including reinforcement learning there's
+a few different reasons to do that uh 3
+in specifically um the first one is just
+like working out the bugs in your
+environment right um you know maybe your
+tools aren't implemented properly maybe
+they don't have access to the data you
+think they do um we find this happens a
+lot and it's a lot less frustrating to
+debug that uh you know separately from
+debugging your your training loop so you
+want to make sure that like you can get
+at least some kind of performance um
+before you start training um and then
+second of all you may find as you're
+trying to improve the performance on uh
+on using these prompted models that uh
+you can get it working really well and
+that's great so that means you don't
+need to train anything um and that saves
+you a lot of time um there's a third
+reason as well uh that I'll share which
+is uh basically once you've gone to that
+effort you've done your best to get the
+best quality prompted baselines you
+possibly can um then uh if you find that
+those baselines are not able to get you
+where you need to go and you're able to
+surpass them with re reinforcement
+learning it feels great you get to glow
+and be like "Yes I was able to beat the
+the frontier models on my task." Um this
+this I I highly recommend it feels good
+you can you can like post on X about it
+there's there's nice you know graphs and
+stuff so this is this is what it looks
+like when everything goes right um so
+this is an example of a training run for
+this art e model that I'm going to be
+talking about uh you can see that
+there's these these lines for each of
+the prompted model baselines that we've
+got um so we've got 03 04 mini and then
+Gemini and and 4.1 and you can see uh
+those ones you know they have certain
+level performance and then you can see
+this this uh sort of moving line um
+that's going on this is the model that
+we trained and you can see it actually
+starts out significantly worse than
+these other models uh from from the
+start that's because we started from a
+Quen 2.5 the 14 billion parameter one
+it's a relatively small model relatively
+weak model um and so it was doing much
+worse than these initially but you can
+see as training progresses um you know
+initially at the beginning it it's sort
+of maybe maybe there's it's learning the
+right way to do tool calls there's a
+very sharp bump as it figures out the
+basic stuff and then a more gradual
+climb until eventually it's able to
+significantly outperform uh any of the
+prompted models on this task and this is
+sort of what you're you know in the
+ideal case when everything works this
+this is what you're looking for this is
+what what you're hoping to achieve um
+this is another view actually of that
+same data we were just looking at um I I
+like I wanted to highlight it in this
+way because it's important to realize so
+on the last graph it looked like the the
+lines sort of asmtote out pretty close
+together that's because they're getting
+near 100% but the last um you can see
+for example with our best prompted model
+here 03 uh it's 90% accuracy and with
+our RL model we're able to get up to 96%
+and so one way to think about that is
+like 60% of the errors that 03 was
+making um are are actually solved with
+our model um which is which is quite a
+large uh you know we find that that's
+actually can be very very important for
+the user experience of someone using one
+of these um if you're getting you know
+just half as many errors uh that that
+can make the product much stronger um so
+this is this is where we got to on
+accuracy there's a couple other metrics
+that we find are often very very
+important um and you know the trade-off
+between these does does is very task
+dependent but but they matter in many
+cases um cost obviously is a big one so
+for for this email agentic harness that
+we had we benchmarked the cost on 034
+mini and our model so if you wanted to
+do like a thousand searches using 03
+that's going to cost $55 um which is a
+lot i think for most use cases that
+probably would be cost prohibitive just
+from a unit economics point of view um
+on 04 mini we're down to $8 but that's
+still quite expensive and then we drop
+another order of magnitude by moving to
+this smaller Quen 2.514B again this is
+just driven it by being it being a much
+smaller model so it's it's much cheaper
+to run um but we're still able to get
+very good performance because we've
+specialized it on our task um beyond
+cost and the accuracy um the third
+metric that often comes up is latency uh
+particularly if you're doing I mean
+certainly anything with voice but if
+there's any real-time human interaction
+with the task latency is going to matter
+a lot um and we were able to find on on
+this task we were able to get
+significantly better latency there's a
+number of different ways which I'll go
+into in more detail later that we were
+able to achieve this um you know one was
+just again moving to a smaller model
+helps there's just less less loading
+from memory less matrix multiplies it's
+just you're able to get tokens out
+faster um we were also able to train
+this model to have fewer turns going
+back and forth with the database with
+the actual email um the list of emails
+uh we we were able to train it to be
+more efficient with its queries um and
+I'll go to that in a moment and so that
+that leads to lower latency um there's
+actually a third thing which we didn't
+apply here but can help a lot with these
+smaller things which is called
+speculative decoding that's something
+you can do on large or small models it
+generally works better on smaller task
+specific models because you get higher
+um acceptance rates on on your
+speculator but basically um there's
+there's lots of reasons why smaller
+models work better um okay so then the
+next question uh for those of you who
+haven't done this yet is like okay what
+is the effort required to do this to
+actually achieve these results um if
+you'd asked me this question a year ago
+I would say "Hey you should really only
+be doing this if you know you're this
+big company and willing to put you know
+months of of work into a project." I
+think that's changing i honestly do um
+in this case uh so this this training
+run it cost us about $80 in GPU time it
+did take about a week of engineering
+time to build this and and caveat that
+was with an engineer who is familiar
+with this domain and and had quite a lot
+of experience uh you know with machine
+learning and RL um but I actually expect
+as as we figure out the right patterns
+here collectively as an industry this
+will keep dropping um and I expect that
+uh you know the sort of payback period
+to get a return on investment from these
+specialized models is actually going to
+continue falling as well um and uh you
+know part of part of the reason I wanted
+to give this talk is to sort of
+distribute that know the knowledge we
+learned and hopefully move faster
+towards that that world where this is
+just sort of like a thing everyone knows
+how to do and it's very easy and very
+fast um so that's that's what we'll be
+talking about for the rest of time is is
+some more of the lessons we learned um
+okay so uh when you are using RL to
+train an agent or really using RL for
+anything else um I find that
+consistently with different problems we
+look at there are there are sort of two
+hard problems that come up every single
+time all right um and the two hard
+problems are first of all figuring out a
+realistic environment right so if you're
+training an agent you need to be
+training it with realistic data with
+realistic inputs and outputs tools
+available everything like that to how
+it's going to be used in production um
+because if you don't then it's going to
+be optimizing for the wrong thing and
+and you won't get the results you want
+when you deploy it and then the second
+thing which sometimes is hard um
+sometimes isn't this one is a little bit
+test dependent is getting the right
+reward function so reward function that
+just means you have to be able to know
+when your agent's gone through and say
+in this case give it an answer to my
+email you have to have some way of
+knowing did it do a good job or a bad
+job all right that's the reward function
+it decides it it it's it's how you
+decide if it's good or it's bad um some
+depending on the domain sometimes that's
+really easy we have I don't know if
+Nathan's here he's going to be talking
+next but um you know he and his team put
+together this thing called RLVR which in
+some verifiable domains it's actually
+very easy to do a reward often times uh
+not all domains are like that oftentimes
+it is kind of hard um and so it's it's
+somewhat task dependent i'm going to go
+through how we solve these problems
+specifically with RE okay first one
+realistic environment so for our RE task
+what is the environment we need what is
+the environment this agent's going to be
+operating in well it needs these tools
+available it needs to be able to go and
+query an email inbox it needs to be able
+to like get emails back um and and that
+look realistic these emails you know the
+inbox should be large because that's
+what most email inboxes are like um the
+emails in it should be diverse and they
+have to look kind of like real emails um
+so this could be kind of hard because
+you can't just go ask like a thousand
+people to you know give you uh their
+their their personal emails to train on
+um luckily in this case we were able to
+solve this with the help of a company
+that has contributed a lot um to just
+the open data ecosystem uh generally
+it's it's like a quite an iconic company
+perhaps I would call it a historic
+company um I'm of course talking about
+Enron um
+I'm hearing some laughter so anyway
+Enron was a uh they were a financialized
+energy company in the '9s and 2000s
+committed massive fraud ended up getting
+shut down by the Department of Justice
+as part of this uh um you know process
+the the the court cases they were going
+through um a dump of like 500,000 of
+their emails was released to the public
+as part of the discovery process um so
+that's that's that's great for things
+like this and that's what we used as our
+environment for the email inboxes all
+right so now we've got realistic email
+inboxes um with tens of thousands of
+emails that are real emails back and
+forth now we have to design our reward
+function so as our agent is going and as
+our agent is um you know we're asking it
+questions and then it's giving us
+answers we have to know is the answer
+correct or not so we can reward it when
+it gets the answer right and it can
+learn to do that better there's
+different ways and this part is very
+task dependent um the way that we went
+about it in this case um was we
+basically turned it into a more of a
+verifiable problem and the way we did
+that was we actually took our email
+inbox we sort of inverted the problem we
+um we grabbed batches of 20 emails at a
+time uh from the inbox and gave them to
+Gemini 2.5 Pro and said "Hey given this
+set of emails give us a few questions
+that a user might realistically ask that
+the answers are found in this email."
+Right and so Gemini generated the
+questions it generated the answers and
+then of course the the source emails
+that came from um and there were some
+extra steps on top of that a lot of the
+questions it came up with looked a
+little bit unrealistic we had a separate
+filtering step where we're like okay
+let's find the subset of these that that
+actually look like questions that you
+know I would maybe ask and we ended up
+with a list of a few thousand questions
+um along with their verified answers um
+and so at this point it becomes much
+more of a a sort of verified thing the
+the reward function becomes much easier
+because we know what the correct answer
+should be and so the way we can tell if
+our agent did a good job is we give our
+agent the question we let it go and
+search the email inbox and try and find
+the right emails and everything and
+eventually it comes back with an answer
+and then we can just use an LLM as judge
+a very simple one and say like hey you
+know here's the question here's the the
+golden answer that that we believe is
+right here's the answer we got from our
+from our model is it right or not um we
+did have to do a little bit of uh
+iteration there making sure that the
+judge was well calibrated on like what
+you know what what counts as as correct
+or not but by and large this worked
+pretty well um and was able to make this
+more of a verified task um so so that's
+how that's how we solved the the reward
+function problem was by having that you
+know turning this into something where
+we had more of a golden data set um okay
+so once you've solved that problem those
+problems once you have your environment
+once you have um your your reward
+function defined then basically you just
+kind of have to run a loop over and over
+and over again where you have your agent
+go through and it tries to um solve the
+problem and then you figure out if it's
+good or it's bad um and then you just uh
+you know reward if it's if it's good and
+punish if it's bad and that's it um and
+uh you do this over and over and over
+again and then hopefully if you've got
+everything set up right um it learns
+what good looks like it learns what bad
+looks like um and it starts doing it
+right um and then again this is this is
+the curve we saw earlier where where you
+can see it it it starts getting better
+over time um okay a few other like
+interesting learnings from this project
+um one thing is we found that there's
+actually you can throw a lot of stuff
+into your reward function uh beyond just
+the primary thing you're trying to solve
+for and so we actually ended up we there
+were like sort of eight different little
+things that we gave extra credit for um
+and I'm going to share two of them here
+so the first one here is um is we were
+trying to have it optimized for the
+number of turns how many times back and
+forth how many times it had to query the
+email inbox before it came up with the
+right answer right so because the most
+important thing of course is is getting
+the answer right but between two answers
+that both get it right we would rather
+it took fewer turns back and forth
+because that's fewer tokens that's lower
+latency lower costs um it's just like a
+more efficient agent so um so you can
+see here on this first graph that early
+on while was getting its feet wet and
+figuring out what worked it it ended up
+spiking up to over six turns on average
+so it would go back and forth a bunch of
+times with the email inbox and and try
+and find the right thing but then once
+it was able to like figure out how to
+use the tools efficiently figure out
+like you know the the right way to
+construct keywords and find the right
+email it was able to get very efficient
+and actually fast uh better than any of
+our prompted models uh on this metric of
+um using fewer turns and again this was
+just because we gave it a little bit of
+extra it was it was a very small amount
+relative to the reward for getting it
+right but a little bit of extra credit
+on on using for fewer turns and it was
+able to to use that um to to optimize
+against that um another extra reward
+function we gave it is um to try and
+discourage it from hallucinating answers
+so um obviously the best thing is to get
+the right answer if you can't find the
+right answer it's much better to say hey
+I don't know than to make up an answer
+in in a situation like this so we
+basically penalized it if um if the
+reward model said "Hey you got the
+answer wrong." And but it had tried to
+get an answer give an answer that was
+like a much lower reward than if it just
+said "Hey I don't know i can't solve
+this problem." And as you can see that
+worked quite well um compared to any of
+the prompted models including 03 we
+ended up with a significantly lower
+hallucination rate because that was part
+of our reward function um again these
+are these are things that are just sort
+of like extra credit but um we found
+that like you can throw in a bunch of
+these and and it can jointly optimize
+all of them at the same time which is
+super powerful
+okay I want to talk a little bit about
+reward hacking um it's it's something
+that comes up a lot when you're trying
+to do this and it's kind of a fun thing
+to talk about um this is an iconic video
+some of you might have seen uh this was
+released by OpenAI almost a decade ago
+at this point of um they were they were
+trying to uh they had this environment
+where you were trying to uh get this
+boat to complete a race and instead of
+learning to complete uh complete the
+race it learned that oh if I just go in
+this like little circle that's not even
+part of the racetrack I can like just
+get a bunch of points um and so it just
+started doing that over and over and
+over again instead of like actually
+following um this is something that
+comes up a lot if you're doing
+reinforcement learning and it's
+basically just the difference between um
+uh the difference between what you
+actually want the model to do and what
+you can measure um like what you're
+actually rewarding it for and and if you
+almost always if you let one of these
+run long enough it will figure out some
+way to exploit your measure um and it
+will figure out some way to to get a
+really high reward um without actually
+solving the problem and you need to just
+watch for that so I'm going to give a
+couple examples here um this is a this
+is a graph um from another project
+actually not this one uh so an engineer
+on our team was uh was working on this
+game called NYT connections some of you
+might know you get 16 words and you have
+to put them in like four groups of four
+it's quite a challenging game especially
+for these language models because it
+requires a lot of world knowledge and
+like you know lateral thinking anyway um
+so so they were trying to train this
+model to do it and uh it wasn't figuring
+out wasn't figuring out what if it
+wasn't figured out and then boom you you
+can see here around step 40 it just like
+takes off and it's like okay we figured
+out how to how to solve this and and
+this engineer I'm I'm going to I'm going
+to call out where's where's where's An
+on our team he's here at the conference
+yeah he's great you should talk to him
+after but um he was like hey we we we
+solved it like we got NYT connections
+and like and it's like okay the graph
+looks good let's look at what it's
+actually doing what it was actually
+doing is it had figured out there was a
+bug in how we wrote the verification and
+if it just put every single word in
+every single category it was able to get
+a perfect score um because we weren't
+verifying that they were in fact only
+four words uh in each category um so
+this is another example this is a fun
+one so I was I was training a model um
+to produce really good titles for hacker
+news um titles that would get a thing
+upvoted so I had this reward model I'd
+trained on like existing hacker news um
+articles and how many up votes they got
+and I was I was trying to train this
+model to produce new titles and it was
+working really well for a while you can
+see and and sort of subjectively as well
+i I looked at a bunch of these these
+titles generated and and for these first
+like thousand steps or so it was
+actually learning things that I was like
+"Okay as someone who spends way too much
+time on Hacker News yeah that that does
+look like a good title you're you're
+doing a good job." And then you can see
+around step um 1200 here it just like
+jumps a bunch right it's like "Okay." Um
+it clearly figured something out i don't
+know what it figured out um but we
+should look at that um and so uh what it
+turns out what the model had figured out
+was that it could just completely ignore
+the content of the post and generate the
+same title for every single one of them
+and that would like maximize its score
+so it generated this title Google lays
+off 80% of workforce literally every
+single article this was this was what it
+labeled it as and was like yes that is
+going to get up on HackerNews for sure
+which which it probably would to be fair
+um
+so so anyway the way the way we solved
+this um what we found is that it's it's
+really important to watch out for this
+solving it typically involves modifying
+in some way your reward function to
+penalize things like that so in the
+second example I talked about it was
+actually quite an easy fix once we
+identified it um which was just add an
+extra LMS judge that looked at the title
+looked at the content and said hey is
+there anything in the title that's not
+supported by the content and we added
+that on and and it it actually worked
+great um the important thing here is you
+want to be looking at your your rollouts
+not just blindly trusting the reward
+function figuring out what's actually
+happening um anyway so uh that's it um
+I'm I'm almost out of time so I'm going
+to stop couple of QR codes for you um
+everything in this presentation and
+there's a much longer write up I have of
+this whole project it includes the code
+it includes the artifacts data sets
+along the way um you can you can check
+that out there um one more thing is uh
+we have a Discord that's open we have an
+open source project for training
+reinforcement learning models um we have
+a discord you can go to if you're
+interested in this kind of thing um we
+we're all in there we answer questions
+there's lots of people from the
+community trying to do these things so
+if uh if you're interested in building
+things with this um feel free to join it
+and yeah happy happy to chat there and
+um yes thank you everyone uh appreciate
+your time

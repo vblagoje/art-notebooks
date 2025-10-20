@@ -1,0 +1,202 @@
+# Why Fine-Tuning Lost and RL Won - Technical Extract
+
+## Fine-Tuning Evolution and Limitations
+
+**The Fine-Tuning Journey:**
+- Started OpenPipe in March 2023 after GPT-4 launch
+- Initial value prop: distill GPT-4 workflows to smaller, cheaper models
+- Got to $1M ARR in 8 months - strong initial traction
+- Problem: frontier model token prices kept dropping 3-5x repeatedly, eating away the value prop
+- Open source models weren't good enough, closed models too expensive
+
+**When Fine-Tuning Makes Sense:**
+- When forced to use smaller models (latency requirements, single GPU deployment)
+- Real-time voice applications often need smaller models
+- 90% of use cases where you're not forced to smaller models: still not good ROI
+- Cost factors: couple weeks of engineer time minimum, ongoing inflexibility in iteration
+
+## The RL Pivot
+
+**The o1 Moment:**
+- January 2025: decided to go all-in on RL after o1 preview
+- Realized someone figured out how to make RL work with LLMs
+- Bet: 25% chance this is the right direction initially
+- Question: can we apply RL to task-specific customization vs just general models?
+
+**RL vs Fine-Tuning:**
+- RL can improve models without labeled data
+- Learn from experience rather than static training data
+- Better for agentic tasks and long-horizon problems
+- Current confidence: 55-60% this is the right approach
+
+## GRPO (Group Relative Policy Optimization)
+
+**GRPO Advantages:**
+- No need for separate value model (operational simplicity)
+- No hyperparameters around value model configuration
+- Relative scoring is easier than absolute scoring
+- Works with group-level normalization
+
+**GRPO Limitations:**
+- Requires parallel rollouts in reproducible environments
+- Environment setup is the hardest challenge today
+- PPO can train on real production traces without simulation
+- GRPO likely a dead end due to environment requirements
+
+**The Math:**
+- GRPO uses differences in scores to promote better trajectories
+- Decreases probability of worse ones in group-relative way
+- Only need scoring function that distinguishes within small set
+- Easier for humans: "which is better?" vs "is this good or bad?"
+
+## RULER (Relative Universal LM Elicited Rewards)
+
+**The Breakthrough:**
+- Solves the reward assignment problem
+- Uses LLM judge on whole group of trajectories
+- "Here's 4 different runs trying to achieve task X, which did best?"
+- Stack ranks them relatively
+
+**Why It Works:**
+- LLM judge can self-ground because it's only doing relative rankings
+- Doesn't need omniscient view of what good/bad looks like
+- Works phenomenally well with GRPO
+- Works on basically everything they've tried
+
+**Performance:**
+- Used Qwen 2.5-14B as training model, Qwen 2.5-3B as judge
+- Got state-of-the-art results better than any frontier model
+- Doesn't depend on having great judge model
+- Reward assignment problem is "fairly solved"
+
+## The Environment Problem
+
+**Why It's Hard:**
+- Need system that reacts same way as production system
+- Must include same failure modes and bugs
+- Example: Airbnb agent needs full copy of website with same bugs
+- If you don't include failure modes, agent falls over in production
+
+**Additional Complexity:**
+- Cooperative agents need human input simulation
+- User simulator diversity vs real user diversity
+- Environment must be close enough to real usage
+- Most companies don't have proper testing environments
+
+**Environment Types:**
+- Formal environments (compilers) - work well, no work needed
+- RL environment startups - expensive, limited transfer
+- Manual environment building - very difficult for most companies
+
+**Current Solutions:**
+- WebArena: Docker containers with clones of Reddit, Wikipedia, GitLab, CMS, e-commerce
+- Mind2Web: similar academic environments
+- Most enterprises don't have proper environments
+
+## LoRA (Low-Rank Adaptation)
+
+**LoRA Advantages:**
+- Less memory to train
+- Can multiplex arbitrarily large number of LoRAs on same GPU
+- Per-token pricing vs GPU hour pricing
+- Much more flexibility at deployment time
+- Still bullish on LoRAs despite "uncool" period
+
+**When LoRAs Work:**
+- Relatively lightweight customization of existing model
+- Specific task applications
+- No downside vs full fine-tuning for these use cases
+- Thinking Machines blog post validated the approach
+
+**LoRA Marketing Issues:**
+- Perceived as "Walmart store brand fine-tuning"
+- "Can't afford full fine-tuning" perception
+- Actually just different hyperparameters for different use cases
+
+## ART Framework
+
+**What ART Solves:**
+- Infrastructure and libraries for RL
+- Handles practical issues: crashes, out of memory, scaling
+- Built by people who know how to build reliable software
+- Not PhD students building academic tools
+
+**ART Components:**
+- Environment definition
+- Reward function definition
+- Trajectory management
+- Model training integration
+
+## Serverless RL
+
+**What It Provides:**
+- Offloads all GPU management
+- No worry about crashes, out of memory, scaling
+- Define environment, define reward function
+- Ship trajectories back to backend for model updates
+- Makes RL "way easier"
+
+**The Vision:**
+- Every agent learns continually from real world experience
+- Move from proof-of-concept to production-ready agents
+- 10x more AI inference possible if reliability problem solved
+- 90% of inference market addressable if this works
+
+## Technical Implementation Details
+
+**Data Format:**
+- Simple: list of chat completion messages
+- Whatever tool calls the agent will see and do
+- Getting data not hard, connecting to real systems is the challenge
+
+**Training Process:**
+- Generate multiple responses per input
+- RULER compares and ranks them
+- GRPO uses relative rankings for training
+- Continual learning from real experience
+
+**Reward Hacking:**
+- Easy to detect when it happens
+- Model starts doing hack "all the time"
+- Just adjust reward prompt, goes away
+- LM judges make this straightforward
+
+## Market Analysis
+
+**Fine-Tuning Market:**
+- Squeezed between GPU providers and frontier labs
+- GPU providers want fine-tuning as service for stickiness
+- Frontier labs keep putting out better models cheaper
+- Developer experience matters more than raw capability
+
+**RL Market Opportunity:**
+- Enterprises have agents stuck in proof-of-concept stage
+- Reliability is the main blocker to production deployment
+- RL can address specific failure modes without breaking other things
+- Continual learning approach vs "perfect model upfront"
+
+**Open Source vs Proprietary:**
+- Open source will gain share as models improve
+- Enterprises prefer open models for cost, privacy
+- Coding will stay mostly closed due to subsidies
+- Other domains: 15-20% open source possible
+
+## Future Directions
+
+**World Models:**
+- Potential solution to environment problem
+- Simulated environment that hallucinates world responses
+- Train on production traces to understand specific systems
+- Could replace need for full environment replication
+
+**Online Evals:**
+- Move from static eval datasets to real-world feedback
+- Analytics/UX people drawn into ML process
+- Continuous improvement based on actual usage
+- Major theme for 2026
+
+**Continual Learning:**
+- Agents that improve from real world experience
+- Address specific failure modes as they arise
+- Similar to training human employees
+- Unlock 90% of current inference market
