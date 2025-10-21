@@ -214,21 +214,27 @@ Both use the same core machinery (environments, rollouts, trajectories), just di
 
 | Type | Metric | Stop When | Example |
 |------|--------|-----------|---------|
-| **Verifiable** | Accuracy % | Plateau + beat baseline (e.g., 96% vs 90%) | ART-E email Q&A |
+| **Verifiable** | Accuracy % | Plateau + beat baseline (e.g., 96% vs 90%) | 2048 game, code tests |
 | **Non-Verifiable** | Avg RULER reward | Reward plateau + manual quality checks | auto_rl.ipynb grammar |
-| **Hybrid** | Both RULER reward + Validation accuracy | Validation accuracy plateau (primary) + reward plateau | Best of both worlds |
+| **Hybrid** | Both RULER reward + Validation accuracy | Validation accuracy plateau (primary) + reward plateau | ART-E email Q&A* |
+
+*ART-E is actually non-verifiable (subjective answer quality) but used hybrid approach: RULER for training + validation accuracy for stopping.
 
 ### Expected Timeline & Cost
 
-**From ART-E (verifiable task):**
+**From ART-E (with hand-crafted rewards):**
 - ~1 week engineering time
 - $80 GPU cost
-- 100-200 training steps
+- Training steps not explicitly stated (inferred from "week of training" and convergence curves)*
+
+*RULER paper shows training curves but doesn't specify exact step counts. The "100-200 steps" is estimated from typical RL agent training duration.
 
 **From auto_rl.ipynb (non-verifiable):**
 - Few hours training time
-- 25 inputs × 3 epochs × 2 groups/step ≈ 40 steps
+- 25 inputs × 3 epochs × 2 groups/step ≈ 38 steps*
 - No accuracy metric exists - use RULER rewards + manual inspection
+
+*Math: (25 inputs / 2 groups per step) × 3 epochs = 12.5 × 3 = 37.5 steps, rounds to 38
 
 **RULER advantage:** Converges faster than hand-tuned rewards, allows partial credit.
 
