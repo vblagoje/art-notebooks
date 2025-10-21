@@ -1,5 +1,155 @@
 ## RL + ART + RULER notes
 
+## Start with Prompted Models First
+
+**Critical Workflow Advice (from Kyle):**
+
+Always start with prompted frontier models before considering RL training:
+
+**Three Reasons:**
+1. **Debug environment separately** - Your tools might not work properly, might not have access to right data
+2. **May not need training** - Prompted models might work well enough, saves time and money
+3. **Establishes baseline** - Feels great to beat frontier models; validates that RL training was worth it
+
+**Workflow:**
+```
+1. Build environment + tools
+2. Test with GPT-4/Claude (prompted)
+3. If good enough → Done! Use prompted model
+4. If not good enough → Now consider RL training
+```
+
+**From Kyle's talk:** "The first thing you should do is just try using prompted models... that means you don't need to train anything and that saves you a lot of time."
+
+---
+
+## The Two Hard Problems in RL
+
+### Problem 1: Building a Realistic Environment
+
+**Requirements:**
+- Must match production usage exactly
+- Include same failure modes and bugs  
+- Realistic data, inputs, outputs, tools
+- If environment ≠ production → agent optimizes for wrong thing
+
+**Why It's Hard:**
+- Example: Airbnb agent needs full copy of website with same bugs
+- If you don't include failure modes, agent fails in production
+- Most companies don't have proper testing environments
+- Cooperative agents need realistic user simulators
+
+**Solutions:**
+- Simple games (2048, tic-tac-toe): Easy, fully defined
+- Web environments: Use WebArena, Mind2Web (Docker containers)
+- Email: Use public datasets (Enron)
+- Custom business logic: Often the hardest - need to replicate production
+
+**The Emerging RL Environment Industry:**
+
+Silicon Valley is betting big on this problem. Startups like **Mechanize** (building realistic RL environments, working with Anthropic), **Prime Intellect** (offering an "RL environment hub" like Hugging Face for environments), and **Mercor/Surge** (expanding from data labeling into interactive simulations) are racing to become the "Scale AI for environments." Anthropic alone plans to spend $1B+ on RL environments in the coming year. Companies like WebArena and Mind2Web provide open-source web-based environments that simulate realistic browsing, forms, and dynamic content—crucial for benchmarking agent robustness beyond toy examples. The compute demands far exceed static training, creating opportunities but also showing how hard the environment problem remains for most companies without dedicated infrastructure.
+
+### Problem 2: Reward Function
+
+Already covered in sections above (RULER solves this for non-verifiable domains).
+
+---
+
+## When RL Makes Sense (vs Fine-Tuning)
+
+### RL Advantages
+
+**Use RL when:**
+- ✅ Task has clear success criteria (even if subjective with RULER)
+- ✅ Agent needs to learn from experience/feedback
+- ✅ Multi-turn, tool-using agent behavior
+- ✅ Want to beat frontier models on specific task
+- ✅ Can build realistic environment
+
+**RL Benefits:**
+- No labeled data needed (with RULER)
+- Learns optimal strategies through trial
+- Better for agentic, long-horizon tasks
+- Can achieve better than GPT-4/Claude on your task
+
+### Fine-Tuning Still Makes Sense
+
+**Use fine-tuning when:**
+- ✅ Forced to use smaller models (latency, single GPU deployment, real-time voice)
+- ✅ Style/format adaptation (not performance improvement)
+- ✅ Domain-specific vocabulary/terminology
+- ⚠️ But: 90% of use cases don't have good ROI for fine-tuning
+
+**From OpenPipe's journey:**
+- Started with fine-tuning (2023)
+- Hit $1M ARR in 8 months
+- Problem: Frontier model prices kept dropping 3-5x
+- Pivoted to RL (2025): "25% chance this is right direction" → now 55-60% confident
+
+**Key insight:** RL can improve models without labeled data; fine-tuning just mimics existing data.
+
+---
+
+## Performance Metrics: The Full Picture
+
+Beyond accuracy, RL training improves three key metrics:
+
+### 1. Accuracy
+- ART-E: 96% (RL) vs 90% (o3) = 60% error reduction
+- Makes product much stronger for user experience
+
+### 2. Cost
+- o3: $55 per 1,000 searches (cost prohibitive)
+- o4-mini: $8 per 1,000 searches (still expensive)
+- Qwen 2.5-14B trained: <$1 per 1,000 searches
+- **Order of magnitude cheaper** - driven by using smaller specialized model
+
+### 3. Latency  
+- Smaller model: less memory loading, fewer matrix multiplies, faster tokens
+- Fewer turns: trained to be more efficient (ART-E learned better search keywords)
+- Speculative decoding: works better on smaller task-specific models (higher acceptance rates)
+
+**The Triple Win:** Better accuracy + 10x cheaper + faster response
+
+---
+
+## LoRA for RL Training
+
+**Why LoRA (Low-Rank Adaptation):**
+- Less memory to train vs full fine-tuning
+- Can multiplex arbitrarily large number of LoRAs on same GPU
+- Faster iteration during training
+- More flexibility at deployment
+
+**ART uses LoRA by default** for all training - you don't need to configure this, it just works.
+
+---
+
+## GRPO vs PPO
+
+### GRPO (What ART Uses)
+
+**Advantages:**
+- No separate value model (simpler)
+- No hyperparameters for value model
+- Relative scoring easier than absolute
+- Works perfectly with RULER
+
+**Disadvantages:**
+- Requires parallel rollouts in reproducible environment
+- Environment setup is hardest challenge
+- Kyle: "GRPO likely a dead end long-term due to environment requirements"
+
+### PPO Alternative
+
+**Advantage:** Can train on real production traces without full environment simulation
+
+**Disadvantage:** More complex (needs value model, more hyperparameters)
+
+**Current state:** GRPO works great for tasks where you can build environments (games, email, code). For complex production systems, environment problem remains unsolved.
+
+---
+
 ### 1. **Verifiable Domains**
 Problems where success can be objectively measured programmatically.
 
