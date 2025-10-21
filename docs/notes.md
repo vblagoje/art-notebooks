@@ -367,3 +367,88 @@ for step in range(max_steps):
 | **Supervised** | 10,000+ | Ground truth | Val loss | Abundant labels |
 
 **Hybrid is the sweet spot for most production agent tasks.**
+
+---
+
+## Multi-Objective Reward Engineering
+
+### Two Approaches Based on Domain
+
+**Verifiable Domains (Code, Math, Games):**
+```python
+# Explicit weighted combination in rollout
+trajectory.reward = (
+    primary_objective * 1.0 +      # Correctness/winning
+    secondary_objective * 0.2 +    # Efficiency/style
+    penalty * -0.5                 # Avoid bad behaviors
+)
+```
+
+**Example from 2048:**
+```python
+max_value_reward = log_scale(max_tile)       # Primary: high tile
+board_value_reward = log_scale(total_value)  # Secondary: full board
+trajectory.reward = max_value_reward + (board_value_reward * 0.2)
+```
+
+**Non-Verifiable Domains (Agents, Dialogue, Content):**
+```python
+# RULER handles everything via system prompt
+system_prompt = """
+PRIMARY: Answer questions correctly
+SECONDARY: Be efficient (minimize searches)
+TERTIARY: Say "I don't know" over guessing
+"""
+
+judged_group = await ruler_score_group(group, "openai/o4-mini")
+# No manual reward engineering needed
+```
+
+### Key Insight: RULER Made Manual Rewards Obsolete
+
+**ART-E Evolution:**
+
+| Version | Approach | Accuracy | Convergence | Engineering |
+|---------|----------|----------|-------------|-------------|
+| **2024: Manual** | 8 hand-tuned reward components | 96% | Slower | ~1 week* |
+| **2025: RULER** | Pure LLM judge + system prompt | 95% | **Faster** | Hours-2 days** |
+
+*From Kyle's talk: "About a week of engineering time" for ART-E with manual rewards  
+**From OpenPipe docs: "RULER can reduce implementation time by 2-3x" → hours to couple days vs days to weeks
+
+**From RULER paper:**
+> "Surprisingly, convergence was substantially **faster** on most RULER runs than with the hand-tuned baseline... because RULER was able to give partial rewards to answers that were close but incomplete."
+
+### Guidelines
+
+**1. Weight Scaling**
+- Primary objective: 1.0 baseline
+- Secondary objectives: 0.1-0.3 typical (observed in 2048 example: 0.2)*
+- Penalties: Can be larger but watch for dominating
+
+*Best practice: secondary should be "very small amount relative" to primary (Kyle's talk). General RL guidance: start with 10:1 ratio or higher, tune empirically for your task.
+
+**2. For Verifiable Domains**
+Use explicit weighted sums - you control exact behavior
+
+**3. For Non-Verifiable Domains**
+Use RULER with detailed system prompt - it automatically handles:
+- Primary goals (correctness)
+- Efficiency (mentioned in default rubric)
+- Style preferences (from system prompt)
+- Multiple objectives jointly
+
+**4. RULER's Default Efficiency Handling**
+
+From default rubric:
+> "A trajectory that achieves its goal more efficiently (eg. by avoiding unproductive detours) should get a higher score than a trajectory that achieves its goal less efficiently."
+
+**Don't manually add efficiency bonuses to RULER scores** - it already considers efficiency.
+
+### The Trade-Off
+
+**Manual rewards:** Full control, slightly higher accuracy, slow to design
+
+**RULER:** Fast to deploy, 1-2% accuracy loss, faster convergence, no tuning
+
+**Recommendation:** Use RULER unless you need that extra 1-2% and have time to iterate.
