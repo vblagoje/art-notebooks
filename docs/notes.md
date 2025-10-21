@@ -216,6 +216,7 @@ Both use the same core machinery (environments, rollouts, trajectories), just di
 |------|--------|-----------|---------|
 | **Verifiable** | Accuracy % | Plateau + beat baseline (e.g., 96% vs 90%) | ART-E email Q&A |
 | **Non-Verifiable** | Avg RULER reward | Reward plateau + manual quality checks | auto_rl.ipynb grammar |
+| **Hybrid** | Both RULER reward + Validation accuracy | Validation accuracy plateau (primary) + reward plateau | Best of both worlds |
 
 ### Expected Timeline & Cost
 
@@ -285,3 +286,84 @@ for traj in sample_trajectories:
 > — Kyle Corbitt
 
 **Key insight:** Reward functions are proxies, not truth. Models exploit gaps. 5 minutes of rollout inspection > hours debugging reward hacks.
+
+---
+
+## Hybrid Approach: RULER Training + Validation Stopping
+
+### What It Is
+
+When you have **50-500 labeled examples** (too few for supervised training), use:
+1. **RULER for training rewards** - no labels needed, faster convergence
+2. **Validation accuracy for stopping** - objective metric, automatic reward hacking detection
+
+This is **not** verifiable domains - it's for subjective tasks with limited labeled data.
+
+### Why It Works
+
+**ART-E (OpenPipe's email agent):**
+- Training: RULER judges trajectories (no ground truth)
+- Validation: Accuracy checked every 5 steps (uses ground truth)
+- Stopping: Validation accuracy plateaus at 96%
+- Result: Beat o3 (90%) with 60% error reduction
+
+**RULER paper results:**
+- Reasoning Classifier: RULER (90%) > RLVR supervised (89%)
+- Customer Support: RULER (93%) > hand-tuned with labels (92%)
+- Converged **faster** than hand-tuned baselines
+
+### Implementation Pattern
+
+```python
+# Split data (80/10/10)
+training: 800 scenarios  # Labels hidden - RULER doesn't need them
+validation: 100 scenarios  # Labels for stopping
+test: 100 scenarios  # Final evaluation
+
+# Training loop
+for step in range(max_steps):
+    # 1. RULER training (no ground truth)
+    groups = [rollout(model, scenario) for scenario in batch]
+    judged_groups = [await ruler_score_group(group, "openai/o4-mini") 
+                     for group in groups]
+    await model.train(judged_groups)
+    
+    # 2. Validate every 5 steps (uses ground truth)
+    if step % 5 == 0:
+        val_accuracy = evaluate_on_validation_set(model, validation_set)
+        
+        # 3. Stop when validation plateaus
+        if val_accuracy >= 95% and plateau_detected():
+            break
+```
+
+### Key Benefits
+
+**1. Efficient Label Use:** 50-200 examples enough (vs 10,000+ for supervised)
+
+**2. Faster Convergence:** RULER gives partial credit vs binary hand-tuned rewards
+
+**3. Objective Stopping:** Clear metric vs "does this look good?"
+
+**4. Auto Reward Hacking Detection:** Val accuracy drops while reward increases? Stop immediately.
+
+**5. Robust to Noisy Labels:** Labels only in validation, not training (RULER ignores them)
+
+### When Metrics Diverge
+
+| Observation | Interpretation | Action |
+|-------------|----------------|--------|
+| Val ↑, Reward ↑ | ✅ Healthy | Continue |
+| Val plateau, Reward ↑ | ⚠️ Converged | Stop soon |
+| Val ↓, Reward ↑ | 🚨 **Reward hacking** | Stop & debug |
+
+### Three Approaches Compared
+
+| Approach | Labels | Training Reward | Stopping | Best For |
+|----------|--------|----------------|----------|----------|
+| **Verifiable** | 0 | Deterministic | Accuracy | Code, math, games |
+| **Pure RULER** | 0 | LLM judge | Reward + inspection | No labels |
+| **Hybrid** | 50-500 | LLM judge | **Val accuracy** | Most real tasks |
+| **Supervised** | 10,000+ | Ground truth | Val loss | Abundant labels |
+
+**Hybrid is the sweet spot for most production agent tasks.**
