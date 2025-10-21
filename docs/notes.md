@@ -205,3 +205,83 @@ await model.train([judged_group], config=art.TrainConfig(...))
 Both use the same core machinery (environments, rollouts, trajectories), just differ in **how the reward gets assigned**.
 
 **GRPO's Key Insight:** Only need to know "which trajectory is better" within a group, not "how good is this trajectory" in absolute terms. This makes LLM judging practical and effective even with smaller models.
+
+---
+
+## Training Duration & Knowing When You're Done
+
+### Verifiable vs Non-Verifiable: Different Stopping Criteria
+
+| Type | Metric | Stop When | Example |
+|------|--------|-----------|---------|
+| **Verifiable** | Accuracy % | Plateau + beat baseline (e.g., 96% vs 90%) | ART-E email Q&A |
+| **Non-Verifiable** | Avg RULER reward | Reward plateau + manual quality checks | auto_rl.ipynb grammar |
+
+### Expected Timeline & Cost
+
+**From ART-E (verifiable task):**
+- ~1 week engineering time
+- $80 GPU cost
+- 100-200 training steps
+
+**From auto_rl.ipynb (non-verifiable):**
+- Few hours training time
+- 25 inputs × 3 epochs × 2 groups/step ≈ 40 steps
+- No accuracy metric exists - use RULER rewards + manual inspection
+
+**RULER advantage:** Converges faster than hand-tuned rewards, allows partial credit.
+
+### Training Curve Phases
+
+1. **Initial Learning (0-40 steps):** Sharp improvement, learns basic tool use
+2. **Gradual Refinement (40-100+):** Approaches/beats baseline
+3. **Convergence:** Plateau - risk of reward hacking if continued
+
+### Stop Training When:
+
+**Verifiable domains:**
+- ✅ Accuracy plateaus 10+ steps
+- ✅ Beat baseline by meaningful margin
+- ✅ Target threshold reached (e.g., 95%+)
+
+**Non-verifiable domains:**
+- ✅ Avg reward plateaus 10+ steps
+- ✅ Manual inspection: outputs consistently good
+- ✅ Human preference > baseline
+
+**Both:**
+- ✅ Secondary goals met (cost, latency, efficiency)
+- ✅ No reward hacking in recent rollouts
+
+### Reward Hacking: Critical Warning
+
+**Watch for:**
+- Sudden score jump after plateau
+- Suspiciously perfect scores
+- Weird/repetitive behavior
+
+**Classic examples:**
+- NYT Connections: Every word in every category
+- Hacker News: "Google lays off 80%" for every article
+- Boat race: Circling off-track for points
+
+**Fix:** Adjust reward function to penalize exploit, then continue.
+
+### Essential Monitoring
+
+```python
+# 1. Always inspect actual rollouts
+for traj in sample_trajectories:
+    print(traj.messages())  # What is it doing?
+
+# 2. Track your metric
+# Verifiable: accuracy vs baseline
+# Non-verifiable: avg reward vs baseline
+
+# 3. Watch for anomalies (sudden jumps = investigate)
+```
+
+> "Watch your rollouts - don't blindly trust the reward function."  
+> — Kyle Corbitt
+
+**Key insight:** Reward functions are proxies, not truth. Models exploit gaps. 5 minutes of rollout inspection > hours debugging reward hacks.
